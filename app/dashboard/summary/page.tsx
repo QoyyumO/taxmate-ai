@@ -5,7 +5,7 @@ import Navbar from '../../../components/Navbar';
 import { useUserStore } from '../../../store/useUserStore';
 import { getTaxSummaries, getTransactions } from '../../../lib/firestore';
 import { formatCurrency, formatDate } from '../../../utils/formatters';
-import { getTaxBracketInfo } from '../../../lib/taxLogic';
+import { getTaxBracketInfo, calculateTotalIncome, calculateTotalExpenses, calculateTaxableIncome, calculatePersonalIncomeTax, calculateDeductibleExpenses, calculateRentRelief } from '../../../lib/taxLogic';
 import type { TaxSummary, Transaction } from '../../../types/transactions';
 
 const TaxSummaryPage: React.FC = () => {
@@ -38,8 +38,15 @@ const TaxSummaryPage: React.FC = () => {
     loadData();
   }, [user]);
 
-  const latestSummary = taxSummaries[0];
-  const taxBrackets = latestSummary ? getTaxBracketInfo(latestSummary.taxableIncome) : [];
+  // Calculate real-time values from transactions (like dashboard does)
+  const totalIncome = calculateTotalIncome(transactions);
+  const totalExpenses = calculateTotalExpenses(transactions);
+  const deductibleExpenses = calculateDeductibleExpenses(transactions);
+  const rentRelief = calculateRentRelief(transactions);
+  const taxableIncome = calculateTaxableIncome(transactions);
+  const estimatedTax = calculatePersonalIncomeTax(taxableIncome);
+  
+  const taxBrackets = getTaxBracketInfo(taxableIncome);
 
   if (isLoading) {
     return (
@@ -78,7 +85,7 @@ const TaxSummaryPage: React.FC = () => {
             </p>
           </div>
 
-          {latestSummary ? (
+          {transactions.length > 0 ? (
             <div className="space-y-8">
               {/* Tax Summary Cards */}
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -87,7 +94,7 @@ const TaxSummaryPage: React.FC = () => {
                     <div>
                       <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Total Income</p>
                       <p className="text-2xl font-bold text-green-600 dark:text-green-400">
-                        {formatCurrency(latestSummary.totalIncome)}
+                        {formatCurrency(totalIncome)}
                       </p>
                     </div>
                     <div className="w-12 h-12 bg-green-50 dark:bg-green-900/20 text-green-600 dark:text-green-400 rounded-lg flex items-center justify-center">
@@ -103,7 +110,7 @@ const TaxSummaryPage: React.FC = () => {
                     <div>
                       <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Total Expenses</p>
                       <p className="text-2xl font-bold text-red-600 dark:text-red-400">
-                        {formatCurrency(latestSummary.totalExpenses)}
+                        {formatCurrency(totalExpenses)}
                       </p>
                     </div>
                     <div className="w-12 h-12 bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 rounded-lg flex items-center justify-center">
@@ -119,7 +126,7 @@ const TaxSummaryPage: React.FC = () => {
                     <div>
                       <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Taxable Income</p>
                       <p className="text-2xl font-bold text-blue-600 dark:text-blue-400">
-                        {formatCurrency(latestSummary.taxableIncome)}
+                        {formatCurrency(taxableIncome)}
                       </p>
                     </div>
                     <div className="w-12 h-12 bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 rounded-lg flex items-center justify-center">
@@ -135,12 +142,47 @@ const TaxSummaryPage: React.FC = () => {
                     <div>
                       <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Estimated Tax</p>
                       <p className="text-2xl font-bold text-purple-600 dark:text-purple-400">
-                        {formatCurrency(latestSummary.estimatedTax)}
+                        {formatCurrency(estimatedTax)}
                       </p>
                     </div>
                     <div className="w-12 h-12 bg-purple-50 dark:bg-purple-900/20 text-purple-600 dark:text-purple-400 rounded-lg flex items-center justify-center">
                       <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                      </svg>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Additional 2026 Tax Information */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="bg-white rounded-lg shadow-sm border border-gray-200 dark:bg-gray-800 dark:border-gray-700 p-6">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Deductible Expenses</p>
+                      <p className="text-2xl font-bold text-orange-600 dark:text-orange-400">
+                        {formatCurrency(deductibleExpenses)}
+                      </p>
+                    </div>
+                    <div className="w-12 h-12 bg-orange-50 dark:bg-orange-900/20 text-orange-600 dark:text-orange-400 rounded-lg flex items-center justify-center">
+                      <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                      </svg>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="bg-white rounded-lg shadow-sm border border-gray-200 dark:bg-gray-800 dark:border-gray-700 p-6">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Rent Relief (2026)</p>
+                      <p className="text-2xl font-bold text-cyan-600 dark:text-cyan-400">
+                        {formatCurrency(rentRelief)}
+                      </p>
+                    </div>
+                    <div className="w-12 h-12 bg-cyan-50 dark:bg-cyan-900/20 text-cyan-600 dark:text-cyan-400 rounded-lg flex items-center justify-center">
+                      <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2H5a2 2 0 00-2-2z" />
                       </svg>
                     </div>
                   </div>

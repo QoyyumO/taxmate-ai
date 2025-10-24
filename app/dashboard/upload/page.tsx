@@ -3,25 +3,41 @@ import React, { useState } from 'react';
 import ProtectedRoute from '../../../components/ProtectedRoute';
 import Navbar from '../../../components/Navbar';
 import UploadForm from '../../../components/UploadForm';
+import PDFUploadForm from '../../../components/PDFUploadForm';
 import Button from '../../../components/ui/button/Button';
+import Tabs from '../../../components/ui/tabs/Tabs';
+import TabPane from '../../../components/ui/tabs/TabPane';
+import { Modal } from '../../../components/ui/modal';
+import { Dropdown } from '../../../components/ui/dropdown/Dropdown';
+import { useUserStore } from '../../../store/useUserStore';
 
 const UploadPage: React.FC = () => {
+  const { user } = useUserStore();
   const [uploadSuccess, setUploadSuccess] = useState<any>(null);
   const [uploadError, setUploadError] = useState<string | null>(null);
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [showErrorModal, setShowErrorModal] = useState(false);
+  const [showHelpDropdown, setShowHelpDropdown] = useState(false);
 
   const handleUploadSuccess = (data: any) => {
+    console.log('Upload success callback:', data);
     setUploadSuccess(data);
     setUploadError(null);
+    setShowSuccessModal(true);
   };
 
   const handleUploadError = (error: string) => {
+    console.log('Upload error callback:', error);
     setUploadError(error);
     setUploadSuccess(null);
+    setShowErrorModal(true);
   };
 
   const handleClearMessages = () => {
     setUploadSuccess(null);
     setUploadError(null);
+    setShowSuccessModal(false);
+    setShowErrorModal(false);
   };
 
   return (
@@ -29,133 +45,181 @@ const UploadPage: React.FC = () => {
       <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
         <Navbar />
         
-        <main className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          {/* Header */}
-          <div className="mb-8">
-            <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
-              Upload CSV
-            </h1>
-            <p className="text-gray-600 dark:text-gray-400 mt-2">
-              Upload your transaction data to calculate your tax liability.
-            </p>
+        <main className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          {/* Header with Help Dropdown */}
+          <div className="mb-8 flex justify-between items-start">
+            <div>
+              <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
+                Upload Transaction Data
+              </h1>
+              <p className="text-gray-600 dark:text-gray-400 mt-2">
+                Choose how you want to upload your transaction data for tax calculations.
+              </p>
+            </div>
+            
+            {/* Help Dropdown */}
+            <div className="relative">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setShowHelpDropdown(!showHelpDropdown)}
+                className="dropdown-toggle"
+              >
+                Help & Support
+              </Button>
+              
+              <Dropdown
+                isOpen={showHelpDropdown}
+                onClose={() => setShowHelpDropdown(false)}
+                className="w-80"
+              >
+                <div className="p-4">
+                  <h3 className="font-semibold text-gray-900 dark:text-white mb-3">
+                    Upload Methods
+                  </h3>
+                  <div className="space-y-3">
+                    <div>
+                      <h4 className="font-medium text-gray-800 dark:text-gray-200">CSV Upload</h4>
+                      <p className="text-sm text-gray-600 dark:text-gray-400">
+                        Manual data preparation required. Full control over data format.
+                      </p>
+                    </div>
+                    <div>
+                      <h4 className="font-medium text-gray-800 dark:text-gray-200">PDF Bank Statement</h4>
+                      <p className="text-sm text-gray-600 dark:text-gray-400">
+                        AI-powered automatic extraction. Works with any bank format.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </Dropdown>
+            </div>
           </div>
 
-          {/* Success Message */}
-          {uploadSuccess && (
-            <div className="mb-6 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg p-4">
-              <div className="flex items-start">
+          {/* Tabs Component */}
+          <Tabs
+            showTabs={true}
+            justifyTabs="left"
+            tabStyle="independent"
+            tabMarginClass="mb-8"
+            onChange={(activeIndex) => {
+              // Handle tab change if needed
+            }}
+          >
+            {/* CSV Upload Tab */}
+            <TabPane tab="CSV Upload">
+              <UploadForm
+                onUploadSuccess={handleUploadSuccess}
+                onUploadError={handleUploadError}
+              />
+            </TabPane>
+
+            {/* PDF Upload Tab */}
+            <TabPane tab="PDF Bank Statement">
+              <PDFUploadForm
+                onUploadSuccess={handleUploadSuccess}
+                onUploadError={handleUploadError}
+              />
+            </TabPane>
+          </Tabs>
+
+          {/* Success Modal */}
+          <Modal
+            isOpen={showSuccessModal}
+            onClose={() => setShowSuccessModal(false)}
+            className="max-w-md"
+          >
+            <div className="p-6">
+              <div className="flex items-center mb-4">
                 <div className="flex-shrink-0">
-                  <svg className="w-5 h-5 text-green-400" fill="currentColor" viewBox="0 0 20 20">
+                  <svg className="w-8 h-8 text-green-500" fill="currentColor" viewBox="0 0 20 20">
                     <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
                   </svg>
                 </div>
-                <div className="ml-3 flex-1">
-                  <h3 className="text-sm font-medium text-green-800 dark:text-green-200">
+                <div className="ml-3">
+                  <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
                     Upload Successful!
                   </h3>
-                  <div className="mt-2 text-sm text-green-700 dark:text-green-300">
-                    <p>
-                      Successfully processed <strong>{uploadSuccess.recordCount}</strong> transactions.
-                    </p>
-                    <p className="mt-1">
-                      Your tax summary has been updated. 
-                      <a href="/dashboard" className="font-medium underline ml-1">
-                        View Dashboard
-                      </a>
-                    </p>
-                  </div>
                 </div>
-                <button
-                  onClick={handleClearMessages}
-                  className="ml-3 text-green-400 hover:text-green-600 dark:hover:text-green-300"
+              </div>
+              
+              <div className="mb-6">
+                <p className="text-gray-600 dark:text-gray-400">
+                  Successfully processed <strong>{uploadSuccess?.recordCount || uploadSuccess?.transactionCount}</strong> transactions.
+                </p>
+                <p className="text-gray-600 dark:text-gray-400 mt-2">
+                  Your tax summary has been updated and is ready for calculations.
+                </p>
+              </div>
+              
+              <div className="flex gap-3">
+                <Button
+                  variant="primary"
+                  size="md"
+                  onClick={() => window.location.href = '/dashboard'}
+                  className="flex-1"
                 >
-                  <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                    <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
-                  </svg>
-                </button>
+                  View Dashboard
+                </Button>
+                <Button
+                  variant="outline"
+                  size="md"
+                  onClick={() => setShowSuccessModal(false)}
+                >
+                  Close
+                </Button>
               </div>
             </div>
-          )}
+          </Modal>
 
-          {/* Error Message */}
-          {uploadError && (
-            <div className="mb-6 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-4">
-              <div className="flex items-start">
+          {/* Error Modal */}
+          <Modal
+            isOpen={showErrorModal}
+            onClose={() => setShowErrorModal(false)}
+            className="max-w-md"
+          >
+            <div className="p-6">
+              <div className="flex items-center mb-4">
                 <div className="flex-shrink-0">
-                  <svg className="w-5 h-5 text-red-400" fill="currentColor" viewBox="0 0 20 20">
+                  <svg className="w-8 h-8 text-red-500" fill="currentColor" viewBox="0 0 20 20">
                     <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
                   </svg>
                 </div>
-                <div className="ml-3 flex-1">
-                  <h3 className="text-sm font-medium text-red-800 dark:text-red-200">
+                <div className="ml-3">
+                  <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
                     Upload Failed
                   </h3>
-                  <div className="mt-2 text-sm text-red-700 dark:text-red-300">
-                    <p>{uploadError}</p>
-                  </div>
                 </div>
-                <button
-                  onClick={handleClearMessages}
-                  className="ml-3 text-red-400 hover:text-red-600 dark:hover:text-red-300"
+              </div>
+              
+              <div className="mb-6">
+                <p className="text-gray-600 dark:text-gray-400">
+                  {uploadError}
+                </p>
+                <p className="text-gray-600 dark:text-gray-400 mt-2 text-sm">
+                  Please check your file format and try again. For PDF files, ensure they contain readable text.
+                </p>
+              </div>
+              
+              <div className="flex gap-3">
+                <Button
+                  variant="primary"
+                  size="md"
+                  onClick={() => setShowErrorModal(false)}
+                  className="flex-1"
                 >
-                  <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                    <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
-                  </svg>
-                </button>
+                  Try Again
+                </Button>
+                <Button
+                  variant="outline"
+                  size="md"
+                  onClick={() => setShowErrorModal(false)}
+                >
+                  Close
+                </Button>
               </div>
             </div>
-          )}
-
-          {/* Upload Form */}
-          <UploadForm
-            onUploadSuccess={handleUploadSuccess}
-            onUploadError={handleUploadError}
-          />
-
-          {/* Instructions */}
-          <div className="mt-8 bg-white rounded-lg shadow-sm border border-gray-200 dark:bg-gray-800 dark:border-gray-700 p-6">
-            <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
-              How to Prepare Your CSV File
-            </h3>
-            <div className="space-y-4">
-              <div>
-                <h4 className="font-medium text-gray-900 dark:text-white mb-2">
-                  1. Required Columns
-                </h4>
-                <ul className="text-sm text-gray-600 dark:text-gray-400 space-y-1 ml-4">
-                  <li>• <strong>date</strong> - Transaction date (YYYY-MM-DD format)</li>
-                  <li>• <strong>description</strong> - Transaction description</li>
-                  <li>• <strong>amount</strong> - Transaction amount (numbers only)</li>
-                  <li>• <strong>type</strong> - Either "income" or "expense"</li>
-                </ul>
-              </div>
-              
-              <div>
-                <h4 className="font-medium text-gray-900 dark:text-white mb-2">
-                  2. Optional Columns
-                </h4>
-                <ul className="text-sm text-gray-600 dark:text-gray-400 space-y-1 ml-4">
-                  <li>• <strong>category</strong> - Transaction category (e.g., "Salary", "Food")</li>
-                  <li>• <strong>source</strong> - Transaction source (e.g., "Employer", "Bank")</li>
-                  <li>• <strong>isDeductible</strong> - Whether expense is tax deductible (true/false)</li>
-                </ul>
-              </div>
-              
-              <div>
-                <h4 className="font-medium text-gray-900 dark:text-white mb-2">
-                  3. Example Data
-                </h4>
-                <div className="bg-gray-50 dark:bg-gray-700 rounded-lg p-4 text-sm font-mono">
-                  <pre className="text-gray-800 dark:text-gray-200">
-{`date,description,amount,type,category,source,isDeductible
-2024-01-15,Salary Payment,50000,income,Salary,Employer,false
-2024-01-16,Grocery Shopping,5000,expense,Food,Supermarket,false
-2024-01-17,Office Supplies,2000,expense,Office,Stationery Store,true`}
-                  </pre>
-                </div>
-              </div>
-            </div>
-          </div>
+          </Modal>
         </main>
       </div>
     </ProtectedRoute>

@@ -71,40 +71,24 @@ export const createTransactions = async (transactions: Omit<Transaction, 'id' | 
 
 export const getTransactions = async (userId: string) => {
   try {
-    // First try with the composite index query
+    // Use simple query without orderBy to avoid composite index requirement
     const transactionsQuery = query(
       collection(db, 'transactions'),
-      where('userId', '==', userId),
-      orderBy('date', 'desc')
+      where('userId', '==', userId)
     );
     const querySnapshot = await getDocs(transactionsQuery);
-    
-    return querySnapshot.docs.map(doc => ({
+
+    // Sort in memory to avoid composite index requirement
+    const transactions = querySnapshot.docs.map(doc => ({
       id: doc.id,
       ...doc.data(),
       date: doc.data().date.toDate(),
       createdAt: doc.data().createdAt.toDate(),
     })) as (Transaction & { id: string })[];
+
+    return transactions.sort((a, b) => b.date.getTime() - a.date.getTime());
   } catch (error: any) {
-    // If composite index is missing, fall back to simple query
-    if (error.code === 'failed-precondition') {
-      console.log('Composite index missing, using fallback query');
-      const fallbackQuery = query(
-        collection(db, 'transactions'),
-        where('userId', '==', userId)
-      );
-      const querySnapshot = await getDocs(fallbackQuery);
-      
-      // Sort in memory
-      const transactions = querySnapshot.docs.map(doc => ({
-        id: doc.id,
-        ...doc.data(),
-        date: doc.data().date.toDate(),
-        createdAt: doc.data().createdAt.toDate(),
-      })) as (Transaction & { id: string })[];
-      
-      return transactions.sort((a, b) => b.date.getTime() - a.date.getTime());
-    }
+    console.error('Error fetching transactions:', error);
     throw error;
   }
 };
@@ -144,16 +128,18 @@ export const updateCsvUpload = async (uploadId: string, updates: Partial<CsvUplo
 export const getCsvUploads = async (userId: string) => {
   const uploadsQuery = query(
     collection(db, 'csvUploads'),
-    where('userId', '==', userId),
-    orderBy('uploadedAt', 'desc')
+    where('userId', '==', userId)
   );
   const querySnapshot = await getDocs(uploadsQuery);
   
-  return querySnapshot.docs.map(doc => ({
+  // Sort in memory to avoid composite index requirement
+  const uploads = querySnapshot.docs.map(doc => ({
     id: doc.id,
     ...doc.data(),
     uploadedAt: doc.data().uploadedAt.toDate(),
   })) as (CsvUpload & { id: string })[];
+  
+  return uploads.sort((a, b) => b.uploadedAt.getTime() - a.uploadedAt.getTime());
 };
 
 // Tax Summary operations
@@ -168,24 +154,24 @@ export const createTaxSummary = async (summaryData: Omit<TaxSummary, 'id' | 'cre
 export const getTaxSummaries = async (userId: string) => {
   const summariesQuery = query(
     collection(db, 'taxSummaries'),
-    where('userId', '==', userId),
-    orderBy('createdAt', 'desc')
+    where('userId', '==', userId)
   );
   const querySnapshot = await getDocs(summariesQuery);
   
-  return querySnapshot.docs.map(doc => ({
+  // Sort in memory to avoid composite index requirement
+  const summaries = querySnapshot.docs.map(doc => ({
     id: doc.id,
     ...doc.data(),
     createdAt: doc.data().createdAt.toDate(),
   })) as (TaxSummary & { id: string })[];
+  
+  return summaries.sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
 };
 
 export const getLatestTaxSummary = async (userId: string) => {
   const summariesQuery = query(
     collection(db, 'taxSummaries'),
-    where('userId', '==', userId),
-    orderBy('createdAt', 'desc'),
-    limit(1)
+    where('userId', '==', userId)
   );
   const querySnapshot = await getDocs(summariesQuery);
   
@@ -193,10 +179,13 @@ export const getLatestTaxSummary = async (userId: string) => {
     return null;
   }
   
-  const doc = querySnapshot.docs[0];
-  return {
+  // Sort in memory and get the latest one
+  const summaries = querySnapshot.docs.map(doc => ({
     id: doc.id,
     ...doc.data(),
     createdAt: doc.data().createdAt.toDate(),
-  } as TaxSummary & { id: string };
+  })) as (TaxSummary & { id: string })[];
+  
+  const sortedSummaries = summaries.sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
+  return sortedSummaries[0];
 };

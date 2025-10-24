@@ -4,17 +4,16 @@ import { useDropzone } from 'react-dropzone';
 import { useUserStore } from '../store/useUserStore';
 import Button from './ui/button/Button';
 import { formatFileSize } from '../utils/formatters';
-import { getCsvTemplate } from '../lib/csvParser';
 
-interface UploadFormProps {
+interface PDFUploadFormProps {
   onUploadSuccess?: (data: any) => void;
   onUploadError?: (error: string) => void;
 }
 
-const UploadForm: React.FC<UploadFormProps> = ({ onUploadSuccess, onUploadError }) => {
+const PDFUploadForm: React.FC<PDFUploadFormProps> = ({ onUploadSuccess, onUploadError }) => {
   const { user } = useUserStore();
-  const [isUploading, setIsUploading] = useState(false);
-  const [uploadProgress, setUploadProgress] = useState(0);
+  const [isProcessing, setIsProcessing] = useState(false);
+  const [processingProgress, setProcessingProgress] = useState(0);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
 
   const onDrop = useCallback((acceptedFiles: File[]) => {
@@ -27,70 +26,57 @@ const UploadForm: React.FC<UploadFormProps> = ({ onUploadSuccess, onUploadError 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
     accept: {
-      'text/csv': ['.csv'],
-      'application/vnd.ms-excel': ['.csv'],
+      'application/pdf': ['.pdf'],
     },
     multiple: false,
   });
 
-  const handleUpload = async () => {
-    if (!selectedFile || !user) {
-      onUploadError?.('Please select a file and ensure you are logged in.');
-      return;
-    }
+  const handlePDFProcessing = async () => {
+    if (!selectedFile || !user) return;
 
-    setIsUploading(true);
-    setUploadProgress(0);
+    setIsProcessing(true);
+    setProcessingProgress(0);
 
     try {
-      console.log('Starting CSV upload for user:', user.uid);
-      console.log('Selected file:', selectedFile.name, selectedFile.size);
-      
       const formData = new FormData();
-      formData.append('file', selectedFile);
-      formData.append('userId', user.uid);
+      formData.append('pdfFile', selectedFile);
 
-      console.log('Sending request to /api/upload...');
-      const response = await fetch('/api/upload', {
+      // Simulate progress updates
+      const progressInterval = setInterval(() => {
+        setProcessingProgress(prev => {
+          if (prev >= 90) return prev;
+          return prev + Math.random() * 10;
+        });
+      }, 500);
+
+      console.log('Sending PDF to processing API...');
+      formData.append('userId', user.uid); // Add userId to form data
+      const response = await fetch('/api/process-pdf', {
         method: 'POST',
         body: formData,
       });
 
+      clearInterval(progressInterval);
+      setProcessingProgress(100);
+
       console.log('Response status:', response.status);
-      console.log('Response headers:', response.headers);
-      
       const result = await response.json();
       console.log('Response data:', result);
 
-      if (response.ok && result.success) {
-        console.log('Upload successful:', result);
+      if (response.ok) {
         onUploadSuccess?.(result);
         setSelectedFile(null);
       } else {
-        console.error('Upload failed:', result);
-        throw new Error(result.error || 'Upload failed');
+        throw new Error(result.error || 'PDF processing failed');
       }
     } catch (error) {
-      console.error('Upload error:', error);
-      const errorMessage = error instanceof Error ? error.message : 'Upload failed';
+      console.error('PDF processing error:', error);
+      const errorMessage = error instanceof Error ? error.message : 'PDF processing failed';
       onUploadError?.(errorMessage);
     } finally {
-      setIsUploading(false);
-      setUploadProgress(0);
+      setIsProcessing(false);
+      setProcessingProgress(0);
     }
-  };
-
-  const downloadTemplate = () => {
-    const template = getCsvTemplate();
-    const blob = new Blob([template], { type: 'text/csv' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = 'taxmate-template.csv';
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
   };
 
   return (
@@ -98,10 +84,10 @@ const UploadForm: React.FC<UploadFormProps> = ({ onUploadSuccess, onUploadError 
       <div className="p-6">
         <div className="mb-6">
           <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
-            Upload Transaction CSV
+            Upload Bank Statement PDF
           </h3>
           <p className="text-sm text-gray-600 dark:text-gray-400">
-            Upload your bank statement or transaction CSV file to get started with tax calculations.
+            Upload your bank statement PDF and AI will automatically extract transaction data.
           </p>
         </div>
 
@@ -128,13 +114,13 @@ const UploadForm: React.FC<UploadFormProps> = ({ onUploadSuccess, onUploadError 
                   strokeLinecap="round"
                   strokeLinejoin="round"
                   strokeWidth={2}
-                  d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"
+                  d="M7 21h10a2 2 0 002-2V9a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2zM7 3h10a2 2 0 012 2v4H5V5a2 2 0 012-2z"
                 />
               </svg>
             </div>
             
             <h4 className="text-lg font-medium text-gray-900 dark:text-white mb-2">
-              {isDragActive ? 'Drop your CSV file here' : 'Drag & drop your CSV file here'}
+              {isDragActive ? 'Drop your PDF here' : 'Drag & drop your bank statement PDF here'}
             </h4>
             
             <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
@@ -142,7 +128,7 @@ const UploadForm: React.FC<UploadFormProps> = ({ onUploadSuccess, onUploadError 
             </p>
             
             <Button variant="outline" size="sm">
-              Choose File
+              Choose PDF File
             </Button>
           </div>
         </div>
@@ -152,9 +138,9 @@ const UploadForm: React.FC<UploadFormProps> = ({ onUploadSuccess, onUploadError 
           <div className="mt-4 p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-3">
-                <div className="w-8 h-8 bg-green-100 dark:bg-green-900 rounded-full flex items-center justify-center">
-                  <svg className="w-4 h-4 text-green-600 dark:text-green-400" fill="currentColor" viewBox="0 0 20 20">
-                    <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                <div className="w-8 h-8 bg-red-100 dark:bg-red-900 rounded-full flex items-center justify-center">
+                  <svg className="w-4 h-4 text-red-600 dark:text-red-400" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4zm2 6a1 1 0 011-1h6a1 1 0 110 2H7a1 1 0 01-1-1zm1 3a1 1 0 100 2h6a1 1 0 100-2H7z" clipRule="evenodd" />
                   </svg>
                 </div>
                 <div>
@@ -178,52 +164,52 @@ const UploadForm: React.FC<UploadFormProps> = ({ onUploadSuccess, onUploadError 
           </div>
         )}
 
-        {/* Upload Progress */}
-        {isUploading && (
+        {/* Processing Progress */}
+        {isProcessing && (
           <div className="mt-4">
             <div className="flex items-center justify-between text-sm text-gray-600 dark:text-gray-400 mb-2">
-              <span>Uploading...</span>
-              <span>{uploadProgress}%</span>
+              <span>Processing PDF with AI...</span>
+              <span>{Math.round(processingProgress)}%</span>
             </div>
             <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
               <div
                 className="bg-blue-600 h-2 rounded-full transition-all duration-300"
-                style={{ width: `${uploadProgress}%` }}
+                style={{ width: `${processingProgress}%` }}
               />
             </div>
+            <p className="text-xs text-gray-500 dark:text-gray-400 mt-2">
+              Extracting transaction data from your bank statement...
+            </p>
           </div>
         )}
 
         {/* Action Buttons */}
         <div className="mt-6 flex items-center justify-between">
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={downloadTemplate}
-          >
-            Download Template
-          </Button>
+          <div className="text-sm text-gray-500 dark:text-gray-400">
+            <p>Supported: PDF bank statements</p>
+            <p>Max size: 10MB</p>
+          </div>
           
           <Button
-            onClick={handleUpload}
-            disabled={!selectedFile || isUploading}
+            onClick={handlePDFProcessing}
+            disabled={!selectedFile || isProcessing}
             size="sm"
           >
-            {isUploading ? 'Uploading...' : 'Upload & Process'}
+            {isProcessing ? 'Processing...' : 'Extract Transactions'}
           </Button>
         </div>
 
         {/* Help Text */}
         <div className="mt-4 p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
           <h5 className="text-sm font-medium text-blue-900 dark:text-blue-100 mb-2">
-            CSV Format Requirements:
+            How it works:
           </h5>
           <ul className="text-xs text-blue-800 dark:text-blue-200 space-y-1">
-            <li>• Required columns: date, description, amount, type</li>
-            <li>• Optional columns: category, source, isDeductible</li>
-            <li>• Type should be "income" or "expense"</li>
-            <li>• Date format: YYYY-MM-DD</li>
-            <li>• Amount should be numeric (no currency symbols)</li>
+            <li>• Upload your bank statement PDF</li>
+            <li>• AI extracts transaction data automatically</li>
+            <li>• Supports all major Nigerian banks</li>
+            <li>• Handles different statement formats</li>
+            <li>• Converts to CSV for tax calculations</li>
           </ul>
         </div>
       </div>
@@ -231,4 +217,4 @@ const UploadForm: React.FC<UploadFormProps> = ({ onUploadSuccess, onUploadError 
   );
 };
 
-export default UploadForm;
+export default PDFUploadForm;

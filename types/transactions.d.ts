@@ -37,6 +37,9 @@ export interface TaxSummary {
   totalExpenses: number;
   taxableIncome: number;
   estimatedTax: number;
+  // New 2026 fields
+  deductibleExpenses?: number;
+  rentRelief?: number;
   createdAt: Date;
 }
 

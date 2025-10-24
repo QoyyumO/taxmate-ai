@@ -1,21 +1,32 @@
 import type { Transaction, TaxSummary } from '../types/transactions';
 
 /**
- * Calculate Personal Income Tax based on Nigeria's tax brackets
+ * Calculate Personal Income Tax based on Nigeria's NEW 2026 tax brackets
  * @param taxableIncome - The taxable income amount
  * @returns The calculated tax amount
  */
 export const calculatePersonalIncomeTax = (taxableIncome: number): number => {
   if (taxableIncome <= 0) return 0;
   
-  if (taxableIncome <= 300000) {
-    return taxableIncome * 0.07;
-  } else if (taxableIncome <= 600000) {
-    return 21000 + (taxableIncome - 300000) * 0.11;
-  } else if (taxableIncome <= 1100000) {
-    return 54000 + (taxableIncome - 600000) * 0.15;
+  // New 2026 progressive tax structure
+  if (taxableIncome <= 800000) {
+    // Full exemption for minimum wage earners (₦800,000 and below)
+    return 0;
+  } else if (taxableIncome <= 3000000) {
+    // 15% on income from ₦800,001 to ₦3,000,000
+    return (taxableIncome - 800000) * 0.15;
+  } else if (taxableIncome <= 12000000) {
+    // 18% on income from ₦3,000,001 to ₦12,000,000
+    return (3000000 - 800000) * 0.15 + (taxableIncome - 3000000) * 0.18;
+  } else if (taxableIncome <= 25000000) {
+    // 21% on income from ₦12,000,001 to ₦25,000,000
+    return (3000000 - 800000) * 0.15 + (12000000 - 3000000) * 0.18 + (taxableIncome - 12000000) * 0.21;
+  } else if (taxableIncome <= 50000000) {
+    // 23% on income from ₦25,000,001 to ₦50,000,000
+    return (3000000 - 800000) * 0.15 + (12000000 - 3000000) * 0.18 + (25000000 - 12000000) * 0.21 + (taxableIncome - 25000000) * 0.23;
   } else {
-    return 129000 + (taxableIncome - 1100000) * 0.19;
+    // 25% on income above ₦50,000,000
+    return (3000000 - 800000) * 0.15 + (12000000 - 3000000) * 0.18 + (25000000 - 12000000) * 0.21 + (50000000 - 25000000) * 0.23 + (taxableIncome - 50000000) * 0.25;
   }
 };
 
@@ -47,18 +58,38 @@ export const calculateDeductibleExpenses = (transactions: Transaction[]): number
 };
 
 /**
- * Calculate taxable income
- * Formula: Total Income - Deductible Expenses
+ * Calculate Rent Relief (NEW 2026)
+ * Rent Relief = lower of ₦500,000 or 20% of annual rent paid
+ */
+export const calculateRentRelief = (transactions: Transaction[]): number => {
+  // Find rent-related transactions
+  const rentTransactions = transactions.filter(t => 
+    t.type === 'expense' && 
+    (t.description.toLowerCase().includes('rent') || 
+     t.category.toLowerCase().includes('rent') ||
+     t.description.toLowerCase().includes('accommodation'))
+  );
+  
+  const totalRentPaid = rentTransactions.reduce((sum, t) => sum + t.amount, 0);
+  
+  // Rent Relief = lower of ₦500,000 or 20% of annual rent paid
+  return Math.min(500000, totalRentPaid * 0.20);
+};
+
+/**
+ * Calculate taxable income (UPDATED 2026)
+ * Formula: Total Income - Deductible Expenses - Rent Relief
  */
 export const calculateTaxableIncome = (transactions: Transaction[]): number => {
   const totalIncome = calculateTotalIncome(transactions);
   const deductibleExpenses = calculateDeductibleExpenses(transactions);
+  const rentRelief = calculateRentRelief(transactions);
   
-  return Math.max(0, totalIncome - deductibleExpenses);
+  return Math.max(0, totalIncome - deductibleExpenses - rentRelief);
 };
 
 /**
- * Generate tax summary for a given period
+ * Generate tax summary for a given period (UPDATED 2026)
  */
 export const generateTaxSummary = (
   userId: string,
@@ -67,6 +98,8 @@ export const generateTaxSummary = (
 ): Omit<TaxSummary, 'id' | 'createdAt'> => {
   const totalIncome = calculateTotalIncome(transactions);
   const totalExpenses = calculateTotalExpenses(transactions);
+  const deductibleExpenses = calculateDeductibleExpenses(transactions);
+  const rentRelief = calculateRentRelief(transactions);
   const taxableIncome = calculateTaxableIncome(transactions);
   const estimatedTax = calculatePersonalIncomeTax(taxableIncome);
 
@@ -77,6 +110,9 @@ export const generateTaxSummary = (
     totalExpenses,
     taxableIncome,
     estimatedTax,
+    // Additional 2026 information
+    deductibleExpenses,
+    rentRelief,
   };
 };
 
@@ -104,19 +140,22 @@ export const formatCurrency = (amount: number): string => {
 };
 
 /**
- * Get tax bracket information
+ * Get tax bracket information for 2026 Nigerian tax structure
  */
 export const getTaxBracketInfo = (taxableIncome: number) => {
   const brackets = [
-    { min: 0, max: 300000, rate: 0.07, description: 'First ₦300,000' },
-    { min: 300000, max: 600000, rate: 0.11, description: 'Next ₦300,000' },
-    { min: 600000, max: 1100000, rate: 0.15, description: 'Next ₦500,000' },
-    { min: 1100000, max: Infinity, rate: 0.19, description: 'Above ₦1,100,000' },
+    { min: 0, max: 800000, rate: 0, description: '₦0 - ₦800,000 (Full exemption)' },
+    { min: 800000, max: 3000000, rate: 0.15, description: '₦800,001 - ₦3,000,000 (15%)' },
+    { min: 3000000, max: 12000000, rate: 0.18, description: '₦3,000,001 - ₦12,000,000 (18%)' },
+    { min: 12000000, max: 25000000, rate: 0.21, description: '₦12,000,001 - ₦25,000,000 (21%)' },
+    { min: 25000000, max: 50000000, rate: 0.23, description: '₦25,000,001 - ₦50,000,000 (23%)' },
+    { min: 50000000, max: Infinity, rate: 0.25, description: 'Above ₦50,000,000 (25%)' },
   ];
 
   return brackets.map(bracket => ({
     ...bracket,
     applicable: taxableIncome > bracket.min,
-    amountInBracket: Math.min(taxableIncome - bracket.min, bracket.max - bracket.min),
+    amountInBracket: Math.min(Math.max(0, taxableIncome - bracket.min), bracket.max - bracket.min),
+    taxInBracket: Math.min(Math.max(0, taxableIncome - bracket.min), bracket.max - bracket.min) * bracket.rate,
   }));
 };
