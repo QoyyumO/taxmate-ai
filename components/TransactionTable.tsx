@@ -108,8 +108,8 @@ const TransactionTable: React.FC<TransactionTableProps> = ({
         </div>
       </div>
 
-      {/* Table */}
-      <div className="overflow-x-auto">
+      {/* Desktop Table View */}
+      <div className="hidden md:block overflow-x-auto">
         <table className="w-full">
           <thead className="bg-gray-50 dark:bg-gray-700">
             <tr>
@@ -204,6 +204,68 @@ const TransactionTable: React.FC<TransactionTableProps> = ({
             ))}
           </tbody>
         </table>
+      </div>
+
+      {/* Mobile Card View */}
+      <div className="md:hidden space-y-4 p-4">
+        {filteredAndSortedTransactions.map((transaction) => (
+          <div
+            key={transaction.id}
+            className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-4 hover:shadow-md transition-shadow cursor-pointer"
+            onClick={() => onTransactionClick?.(transaction)}
+          >
+            <div className="flex items-start justify-between mb-3">
+              <div className="flex-1">
+                <h4 className="text-sm font-medium text-gray-900 dark:text-white mb-1">
+                  {transaction.description}
+                </h4>
+                <p className="text-xs text-gray-500 dark:text-gray-400">
+                  {formatDate(transaction.date)}
+                </p>
+              </div>
+              <div className="text-right">
+                <span
+                  className={`text-lg font-semibold ${
+                    transaction.type === 'income'
+                      ? 'text-green-600 dark:text-green-400'
+                      : 'text-red-600 dark:text-red-400'
+                  }`}
+                >
+                  {transaction.type === 'expense' ? '-' : '+'}
+                  {formatCurrency(transaction.amount)}
+                </span>
+                <div className="mt-1">
+                  <span
+                    className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
+                      transaction.type === 'income'
+                        ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200'
+                        : 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200'
+                    }`}
+                  >
+                    {transaction.type}
+                  </span>
+                </div>
+              </div>
+            </div>
+            
+            <div className="flex items-center justify-between text-xs text-gray-500 dark:text-gray-400">
+              <div className="flex items-center space-x-4">
+                <span className="flex items-center">
+                  <svg className="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
+                  </svg>
+                  {transaction.category}
+                </span>
+                <span className="flex items-center">
+                  <svg className="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                  {transaction.isDeductible ? 'Deductible' : 'Non-deductible'}
+                </span>
+              </div>
+            </div>
+          </div>
+        ))}
       </div>
 
       {/* Summary */}

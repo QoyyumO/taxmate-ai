@@ -47,52 +47,54 @@ const UploadPage: React.FC = () => {
         
         <main className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           {/* Header with Help Dropdown */}
-          <div className="mb-8 flex justify-between items-start">
-            <div>
-              <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
-                Upload Transaction Data
-              </h1>
-              <p className="text-gray-600 dark:text-gray-400 mt-2">
-                Choose how you want to upload your transaction data for tax calculations.
-              </p>
-            </div>
-            
-            {/* Help Dropdown */}
-            <div className="relative">
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => setShowHelpDropdown(!showHelpDropdown)}
-                className="dropdown-toggle"
-              >
-                Help & Support
-              </Button>
+          <div className="mb-8">
+            <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-4">
+              <div className="flex-1">
+                <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white">
+                  Upload Transaction Data
+                </h1>
+                <p className="text-gray-600 dark:text-gray-400 mt-2">
+                  Choose how you want to upload your transaction data for tax calculations.
+                </p>
+              </div>
               
-              <Dropdown
-                isOpen={showHelpDropdown}
-                onClose={() => setShowHelpDropdown(false)}
-                className="w-80"
-              >
-                <div className="p-4">
-                  <h3 className="font-semibold text-gray-900 dark:text-white mb-3">
-                    Upload Methods
-                  </h3>
-                  <div className="space-y-3">
-                    <div>
-                      <h4 className="font-medium text-gray-800 dark:text-gray-200">CSV Upload</h4>
-                      <p className="text-sm text-gray-600 dark:text-gray-400">
-                        Manual data preparation required. Full control over data format.
-                      </p>
-                    </div>
-                    <div>
-                      <h4 className="font-medium text-gray-800 dark:text-gray-200">PDF Bank Statement</h4>
-                      <p className="text-sm text-gray-600 dark:text-gray-400">
-                        AI-powered automatic extraction. Works with any bank format.
-                      </p>
+              {/* Help Dropdown */}
+              <div className="relative flex-shrink-0">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setShowHelpDropdown(!showHelpDropdown)}
+                  className="dropdown-toggle w-full sm:w-auto"
+                >
+                  Help & Support
+                </Button>
+                
+                <Dropdown
+                  isOpen={showHelpDropdown}
+                  onClose={() => setShowHelpDropdown(false)}
+                  className="w-full sm:w-80"
+                >
+                  <div className="p-4">
+                    <h3 className="font-semibold text-gray-900 dark:text-white mb-3">
+                      Upload Methods
+                    </h3>
+                    <div className="space-y-3">
+                      <div>
+                        <h4 className="font-medium text-gray-800 dark:text-gray-200">CSV Upload</h4>
+                        <p className="text-sm text-gray-600 dark:text-gray-400">
+                          Manual data preparation required. Full control over data format.
+                        </p>
+                      </div>
+                      <div>
+                        <h4 className="font-medium text-gray-800 dark:text-gray-200">PDF Bank Statement</h4>
+                        <p className="text-sm text-gray-600 dark:text-gray-400">
+                          AI-powered automatic extraction. Works with any bank format.
+                        </p>
+                      </div>
                     </div>
                   </div>
-                </div>
-              </Dropdown>
+                </Dropdown>
+              </div>
             </div>
           </div>
 
@@ -101,7 +103,7 @@ const UploadPage: React.FC = () => {
             showTabs={true}
             justifyTabs="left"
             tabStyle="independent"
-            tabMarginClass="mb-8"
+            tabMarginClass="mb-6 sm:mb-8"
             onChange={(activeIndex) => {
               // Handle tab change if needed
             }}
@@ -127,7 +129,7 @@ const UploadPage: React.FC = () => {
           <Modal
             isOpen={showSuccessModal}
             onClose={() => setShowSuccessModal(false)}
-            className="max-w-md"
+            className="max-w-md mx-4"
           >
             <div className="p-6">
               <div className="flex items-center mb-4">
@@ -152,23 +154,24 @@ const UploadPage: React.FC = () => {
                 </p>
               </div>
               
-              <div className="flex gap-3">
-                <Button
-                  variant="primary"
-                  size="md"
-                  onClick={() => window.location.href = '/dashboard'}
-                  className="flex-1"
-                >
-                  View Dashboard
-                </Button>
-                <Button
-                  variant="outline"
-                  size="md"
-                  onClick={() => setShowSuccessModal(false)}
-                >
-                  Close
-                </Button>
-              </div>
+                  <div className="flex flex-col sm:flex-row gap-3">
+                    <Button
+                      variant="primary"
+                      size="md"
+                      onClick={() => window.location.href = '/dashboard'}
+                      className="flex-1"
+                    >
+                      View Dashboard
+                    </Button>
+                    <Button
+                      variant="outline"
+                      size="md"
+                      onClick={() => setShowSuccessModal(false)}
+                      className="flex-1 sm:flex-none"
+                    >
+                      Close
+                    </Button>
+                  </div>
             </div>
           </Modal>
 
@@ -176,7 +179,7 @@ const UploadPage: React.FC = () => {
           <Modal
             isOpen={showErrorModal}
             onClose={() => setShowErrorModal(false)}
-            className="max-w-md"
+            className="max-w-md mx-4"
           >
             <div className="p-6">
               <div className="flex items-center mb-4">
@@ -201,23 +204,24 @@ const UploadPage: React.FC = () => {
                 </p>
               </div>
               
-              <div className="flex gap-3">
-                <Button
-                  variant="primary"
-                  size="md"
-                  onClick={() => setShowErrorModal(false)}
-                  className="flex-1"
-                >
-                  Try Again
-                </Button>
-                <Button
-                  variant="outline"
-                  size="md"
-                  onClick={() => setShowErrorModal(false)}
-                >
-                  Close
-                </Button>
-              </div>
+                  <div className="flex flex-col sm:flex-row gap-3">
+                    <Button
+                      variant="primary"
+                      size="md"
+                      onClick={() => setShowErrorModal(false)}
+                      className="flex-1"
+                    >
+                      Try Again
+                    </Button>
+                    <Button
+                      variant="outline"
+                      size="md"
+                      onClick={() => setShowErrorModal(false)}
+                      className="flex-1 sm:flex-none"
+                    >
+                      Close
+                    </Button>
+                  </div>
             </div>
           </Modal>
         </main>
