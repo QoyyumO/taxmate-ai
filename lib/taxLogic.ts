@@ -1,4 +1,10 @@
-import type { Transaction, TaxSummary } from '../types/transactions';
+import type { Transaction, TaxSummary, TaxAdjustment } from '../types/transactions';
+import { 
+  analyzeTransactionsWithAI, 
+  calculateAIVerifiedDeductions, 
+  calculateAIRentRelief,
+  generateTaxAdjustment
+} from './aiTaxLogic';
 
 /**
  * Calculate Personal Income Tax based on Nigeria's NEW 2026 tax brackets
@@ -89,7 +95,45 @@ export const calculateTaxableIncome = (transactions: Transaction[]): number => {
 };
 
 /**
- * Generate tax summary for a given period (UPDATED 2026)
+ * Generate AI-enhanced tax summary for a given period (UPDATED 2025)
+ */
+export const generateAITaxSummary = async (
+  userId: string,
+  transactions: Transaction[],
+  period: string = new Date().toISOString().slice(0, 7) // YYYY-MM format
+): Promise<Omit<TaxSummary, 'id' | 'createdAt'>> => {
+  // Analyze transactions with AI
+  const analyzedTransactions = await analyzeTransactionsWithAI(transactions);
+  
+  const totalIncome = calculateTotalIncome(analyzedTransactions);
+  const totalExpenses = calculateTotalExpenses(analyzedTransactions);
+  
+  // AI-enhanced deduction calculations
+  const deductionAnalysis = calculateAIVerifiedDeductions(analyzedTransactions);
+  const rentReliefAnalysis = calculateAIRentRelief(analyzedTransactions);
+  
+  const taxableIncome = Math.max(0, totalIncome - deductionAnalysis.totalDeductions - rentReliefAnalysis.totalRentRelief);
+  const estimatedTax = calculatePersonalIncomeTax(taxableIncome);
+
+  return {
+    userId,
+    period,
+    totalIncome,
+    totalExpenses,
+    taxableIncome,
+    estimatedTax,
+    // Enhanced 2025 information with AI verification
+    deductibleExpenses: deductionAnalysis.totalDeductions,
+    rentRelief: rentReliefAnalysis.totalRentRelief,
+    aiVerifiedDeductions: deductionAnalysis.aiVerifiedDeductions,
+    documentationVerifiedDeductions: deductionAnalysis.documentationVerifiedDeductions,
+    pendingVerificationDeductions: deductionAnalysis.pendingVerificationDeductions,
+    taxAdjustments: []
+  };
+};
+
+/**
+ * Generate tax summary for a given period (UPDATED 2026) - Legacy function
  */
 export const generateTaxSummary = (
   userId: string,
@@ -140,7 +184,7 @@ export const formatCurrency = (amount: number): string => {
 };
 
 /**
- * Get tax bracket information for 2026 Nigerian tax structure
+ * Get tax bracket information for 2025 Nigerian tax structure (Nigeria Tax Act 2025)
  */
 export const getTaxBracketInfo = (taxableIncome: number) => {
   const brackets = [
@@ -158,4 +202,133 @@ export const getTaxBracketInfo = (taxableIncome: number) => {
     amountInBracket: Math.min(Math.max(0, taxableIncome - bracket.min), bracket.max - bracket.min),
     taxInBracket: Math.min(Math.max(0, taxableIncome - bracket.min), bracket.max - bracket.min) * bracket.rate,
   }));
+};
+
+/**
+ * Process tax refund based on new documentation
+ */
+export const processTaxRefund = async (
+  userId: string,
+  originalTaxSummaryId: string,
+  newTransactions: Transaction[],
+  supportingDocuments: string[]
+): Promise<TaxAdjustment> => {
+  // Analyze new transactions with AI
+  const analyzedTransactions = await analyzeTransactionsWithAI(newTransactions);
+  
+  // Calculate additional deductions
+  const deductionAnalysis = calculateAIVerifiedDeductions(analyzedTransactions);
+  const rentReliefAnalysis = calculateAIRentRelief(analyzedTransactions);
+  
+  const additionalDeductions = deductionAnalysis.totalDeductions + rentReliefAnalysis.totalRentRelief;
+  
+  // Calculate tax savings
+  const taxSavings = calculatePersonalIncomeTax(additionalDeductions);
+  
+  // Generate tax adjustment
+  const adjustment = generateTaxAdjustment(
+    userId,
+    originalTaxSummaryId,
+    'REFUND',
+    taxSavings,
+    `Tax refund for additional verified deductions: ₦${additionalDeductions.toLocaleString()}`,
+    supportingDocuments
+  );
+  
+  return {
+    ...adjustment,
+    createdAt: new Date()
+  };
+};
+
+/**
+ * Validate and update transaction documentation status
+ */
+export const updateDocumentationStatus = (
+  transaction: Transaction,
+  documentationStatus: {
+    hasReceipt?: boolean;
+    hasPensionSlip?: boolean;
+    hasRentAgreement?: boolean;
+    hasInsurancePolicy?: boolean;
+    hasLoanDocument?: boolean;
+  }
+): Transaction => {
+  const updatedStatus = {
+    hasReceipt: documentationStatus.hasReceipt ?? transaction.documentationStatus?.hasReceipt ?? false,
+    hasPensionSlip: documentationStatus.hasPensionSlip ?? transaction.documentationStatus?.hasPensionSlip ?? false,
+    hasRentAgreement: documentationStatus.hasRentAgreement ?? transaction.documentationStatus?.hasRentAgreement ?? false,
+    hasInsurancePolicy: documentationStatus.hasInsurancePolicy ?? transaction.documentationStatus?.hasInsurancePolicy ?? false,
+    hasLoanDocument: documentationStatus.hasLoanDocument ?? transaction.documentationStatus?.hasLoanDocument ?? false,
+    isVerified: Object.values(documentationStatus).some(Boolean),
+    verificationDate: new Date()
+  };
+  
+  return {
+    ...transaction,
+    documentationStatus: updatedStatus
+  };
+};
+
+/**
+ * Get deduction recommendations based on transaction patterns
+ */
+export const getDeductionRecommendations = (transactions: Transaction[]): {
+  recommendedDeductions: string[];
+  potentialSavings: number;
+  missingDocumentation: string[];
+} => {
+  const recommendations: string[] = [];
+  const missingDocs: string[] = [];
+  let potentialSavings = 0;
+  
+  // Analyze transaction patterns
+  const rentTransactions = transactions.filter(t => 
+    t.description.toLowerCase().includes('rent') && 
+    !t.deductionType
+  );
+  
+  const pensionTransactions = transactions.filter(t => 
+    t.description.toLowerCase().includes('pension') && 
+    !t.deductionType
+  );
+  
+  const insuranceTransactions = transactions.filter(t => 
+    t.description.toLowerCase().includes('insurance') && 
+    !t.deductionType
+  );
+  
+  if (rentTransactions.length > 0) {
+    const totalRent = rentTransactions.reduce((sum, t) => sum + t.amount, 0);
+    const rentRelief = Math.min(500000, totalRent * 0.20);
+    potentialSavings += calculatePersonalIncomeTax(rentRelief);
+    recommendations.push(`Consider claiming rent relief: ₦${rentRelief.toLocaleString()}`);
+    if (!rentTransactions.some(t => t.documentationStatus?.hasRentAgreement)) {
+      missingDocs.push('Rent agreement for rent relief claim');
+    }
+  }
+  
+  if (pensionTransactions.length > 0) {
+    const totalPension = pensionTransactions.reduce((sum, t) => sum + t.amount, 0);
+    potentialSavings += calculatePersonalIncomeTax(totalPension);
+    recommendations.push(`Consider claiming pension contributions: ₦${totalPension.toLocaleString()}`);
+    if (!pensionTransactions.some(t => t.documentationStatus?.hasPensionSlip)) {
+      missingDocs.push('Pension contribution slips');
+    }
+  }
+  
+  if (insuranceTransactions.length > 0) {
+    const totalInsurance = insuranceTransactions.reduce((sum, t) => sum + t.amount, 0);
+    potentialSavings += calculatePersonalIncomeTax(totalInsurance);
+    recommendations.push(`Consider claiming life insurance premiums: ₦${totalInsurance.toLocaleString()}`);
+    if (!insuranceTransactions.some(t => t.documentationStatus?.hasInsurancePolicy)) {
+      missingDocs.push('Insurance policy documents');
+    }
+  }
+  
+  return {
+    recommendedDeductions: recommendations,
+    potentialSavings,
+    missingDocumentation: missingDocs
+  };
 };

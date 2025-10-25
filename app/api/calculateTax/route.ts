@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getTransactions, createTaxSummary } from '../../../lib/firestore';
-import { generateTaxSummary } from '../../../lib/taxLogic';
+import { generateAITaxSummary } from '../../../lib/taxLogic';
 
 export async function POST(request: NextRequest) {
   try {
@@ -23,8 +23,8 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Generate tax summary
-    const taxSummaryData = generateTaxSummary(userId, transactions, period);
+    // Generate AI-enhanced tax summary
+    const taxSummaryData = await generateAITaxSummary(userId, transactions, period);
 
     // Save tax summary to Firestore
     const summaryId = await createTaxSummary(taxSummaryData);

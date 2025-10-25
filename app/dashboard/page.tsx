@@ -4,7 +4,7 @@ import ProtectedRoute from '../../components/ProtectedRoute';
 import Navbar from '../../components/Navbar';
 import { DashboardSummaryCards } from '../../components/SummaryCard';
 import { useUserStore } from '../../store/useUserStore';
-import { getTransactions, getLatestTaxSummary } from '../../lib/firestore';
+import { getTransactions } from '../../lib/firestore';
 import { calculateTotalIncome, calculateTotalExpenses, calculateTaxableIncome, calculatePersonalIncomeTax } from '../../lib/taxLogic';
 import type { Transaction, DashboardSummary } from '../../types/transactions';
 
@@ -93,7 +93,7 @@ const DashboardPage: React.FC = () => {
               Dashboard
             </h1>
             <p className="text-gray-600 dark:text-gray-400 mt-2">
-              Welcome back, {user?.name}! Here's your tax overview.
+              Welcome back, {user?.name}! Here&apos;s your tax overview.
             </p>
           </div>
 
@@ -181,7 +181,7 @@ const DashboardPage: React.FC = () => {
                 Tax Information
               </h3>
               <p className="text-blue-800 dark:text-blue-200 mb-4">
-                Based on Nigeria's Personal Income Tax rates, your estimated tax liability is{' '}
+                Based on Nigeria&apos;s Personal Income Tax rates, your estimated tax liability is{' '}
                 <span className="font-semibold">₦{summary.estimatedTax.toLocaleString()}</span>.
               </p>
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-sm">

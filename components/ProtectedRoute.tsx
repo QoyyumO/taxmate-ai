@@ -13,7 +13,7 @@ interface ProtectedRouteProps {
 
 const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
   const router = useRouter();
-  const { user, setUser, isAuthenticated } = useUserStore();
+  const { setUser, isAuthenticated } = useUserStore();
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {

@@ -1,5 +1,4 @@
 'use client';
-import React from 'react';
 import Link from 'next/link';
 import { useUserStore } from '../store/useUserStore';
 import { useEffect } from 'react';
@@ -11,7 +10,7 @@ import '../lib/firebase-diagnostics'; // Import diagnostics
 import type { User } from '../types/transactions';
 
 export default function Home() {
-  const { user, setUser, isAuthenticated } = useUserStore();
+  const { setUser, isAuthenticated } = useUserStore();
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
@@ -122,7 +121,7 @@ export default function Home() {
             </h1>
             <p className="text-xl text-gray-600 dark:text-gray-400 mb-8 max-w-3xl mx-auto">
               Simplify your tax calculations with intelligent insights. Upload your transaction data 
-              and get accurate tax estimates based on Nigeria's Personal Income Tax rates.
+              and get accurate tax estimates based on Nigeria&apos;s Personal Income Tax rates.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12">
               <Link
@@ -156,7 +155,7 @@ export default function Home() {
                   Accurate Tax Calculations
                 </h3>
                 <p className="text-gray-600 dark:text-gray-400">
-                  Get precise tax estimates based on Nigeria's Personal Income Tax rates and brackets.
+                  Get precise tax estimates based on Nigeria&apos;s Personal Income Tax rates and brackets.
                 </p>
               </div>
 

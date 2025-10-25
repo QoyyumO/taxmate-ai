@@ -1,7 +1,7 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextResponse } from 'next/server';
 import Groq from 'groq-sdk';
 
-export async function GET(request: NextRequest) {
+export async function GET() {
   try {
     console.log('Testing Groq API...');
     
@@ -18,7 +18,7 @@ export async function GET(request: NextRequest) {
 
     // Initialize Groq client
     const groq = new Groq({
-      apiKey: process.env.GROQ_API_KEY!,
+      apiKey: process.env.GROQ_API_KEY || '',
     });
 
     // Test with a simple prompt

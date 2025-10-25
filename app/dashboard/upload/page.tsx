@@ -9,10 +9,8 @@ import Tabs from '../../../components/ui/tabs/Tabs';
 import TabPane from '../../../components/ui/tabs/TabPane';
 import { Modal } from '../../../components/ui/modal';
 import { Dropdown } from '../../../components/ui/dropdown/Dropdown';
-import { useUserStore } from '../../../store/useUserStore';
 
 const UploadPage: React.FC = () => {
-  const { user } = useUserStore();
   const [uploadSuccess, setUploadSuccess] = useState<any>(null);
   const [uploadError, setUploadError] = useState<string | null>(null);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
@@ -33,12 +31,6 @@ const UploadPage: React.FC = () => {
     setShowErrorModal(true);
   };
 
-  const handleClearMessages = () => {
-    setUploadSuccess(null);
-    setUploadError(null);
-    setShowSuccessModal(false);
-    setShowErrorModal(false);
-  };
 
   return (
     <ProtectedRoute>
@@ -104,7 +96,7 @@ const UploadPage: React.FC = () => {
             justifyTabs="left"
             tabStyle="independent"
             tabMarginClass="mb-6 sm:mb-8"
-            onChange={(activeIndex) => {
+            onChange={() => {
               // Handle tab change if needed
             }}
           >

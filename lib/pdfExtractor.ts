@@ -2,7 +2,7 @@ import Groq from 'groq-sdk';
 
 // Initialize Groq client
 const groq = new Groq({
-  apiKey: process.env.GROQ_API_KEY!,
+  apiKey: process.env.GROQ_API_KEY || '',
 });
 
 export interface ExtractedTransaction {
@@ -264,12 +264,12 @@ const validateAndCleanBankData = (data: any): BankStatementData => {
     data.transactions.forEach((transaction: any) => {
       if (transaction.date && transaction.description && transaction.amount !== undefined) {
         cleanedTransactions.push({
-          date: formatDate(transaction.date),
+          date: transaction.date || new Date().toISOString().split('T')[0],
           description: transaction.description.trim(),
           amount: Math.abs(parseFloat(transaction.amount)),
           type: transaction.type === 'income' ? 'income' : 'expense',
-          balance: transaction.balance ? parseFloat(transaction.balance) : undefined,
-          reference: transaction.reference ? transaction.reference.trim() : undefined,
+          ...(transaction.balance && { balance: parseFloat(transaction.balance) }),
+          ...(transaction.reference && { reference: transaction.reference.trim() }),
         });
       }
     });
@@ -282,20 +282,6 @@ const validateAndCleanBankData = (data: any): BankStatementData => {
   };
 };
 
-/**
- * Format date to YYYY-MM-DD format
- */
-const formatDate = (dateString: string): string => {
-  try {
-    const date = new Date(dateString);
-    if (isNaN(date.getTime())) {
-      return dateString; // Return original if can't parse
-    }
-    return date.toISOString().split('T')[0];
-  } catch {
-    return dateString;
-  }
-};
 
 /**
  * Convert extracted transactions to CSV format

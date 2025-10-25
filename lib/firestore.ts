@@ -3,13 +3,10 @@ import {
   doc, 
   addDoc, 
   getDocs, 
-  getDoc, 
   updateDoc, 
-  deleteDoc, 
   query, 
   where, 
   orderBy, 
-  limit,
   Timestamp 
 } from 'firebase/firestore';
 import { db } from './firebase';
@@ -47,6 +44,9 @@ export const getUser = async (uid: string) => {
   }
   
   const userDoc = querySnapshot.docs[0];
+  if (!userDoc) {
+    return null;
+  }
   return { id: userDoc.id, ...userDoc.data() } as User & { id: string };
 };
 

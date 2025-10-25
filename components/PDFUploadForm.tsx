@@ -14,6 +14,7 @@ const PDFUploadForm: React.FC<PDFUploadFormProps> = ({ onUploadSuccess, onUpload
   const { user } = useUserStore();
   const [isProcessing, setIsProcessing] = useState(false);
   const [processingProgress, setProcessingProgress] = useState(0);
+  const [progressStep, setProgressStep] = useState('');
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
 
   const onDrop = useCallback((acceptedFiles: File[]) => {
@@ -36,18 +37,27 @@ const PDFUploadForm: React.FC<PDFUploadFormProps> = ({ onUploadSuccess, onUpload
 
     setIsProcessing(true);
     setProcessingProgress(0);
+    setProgressStep('Preparing PDF processing...');
 
     try {
       const formData = new FormData();
       formData.append('pdfFile', selectedFile);
 
-      // Simulate progress updates
-      const progressInterval = setInterval(() => {
-        setProcessingProgress(prev => {
-          if (prev >= 90) return prev;
-          return prev + Math.random() * 10;
-        });
-      }, 500);
+      // Step 1: Upload PDF
+      setProgressStep('Uploading PDF file...');
+      setProcessingProgress(20);
+      
+      // Step 2: Extracting text
+      setProgressStep('Extracting text from PDF...');
+      setProcessingProgress(40);
+      
+      // Step 3: AI analysis
+      setProgressStep('Analyzing with AI...');
+      setProcessingProgress(60);
+      
+      // Step 4: Parsing transactions
+      setProgressStep('Parsing transaction data...');
+      setProcessingProgress(80);
 
       console.log('Sending PDF to processing API...');
       formData.append('userId', user.uid); // Add userId to form data
@@ -56,14 +66,20 @@ const PDFUploadForm: React.FC<PDFUploadFormProps> = ({ onUploadSuccess, onUpload
         body: formData,
       });
 
-      clearInterval(progressInterval);
-      setProcessingProgress(100);
+      setProgressStep('Saving to database...');
+      setProcessingProgress(90);
 
       console.log('Response status:', response.status);
       const result = await response.json();
       console.log('Response data:', result);
 
       if (response.ok) {
+        setProgressStep('Complete!');
+        setProcessingProgress(100);
+        
+        // Small delay to show completion
+        await new Promise(resolve => setTimeout(resolve, 500));
+        
         onUploadSuccess?.(result);
         setSelectedFile(null);
       } else {
@@ -76,6 +92,7 @@ const PDFUploadForm: React.FC<PDFUploadFormProps> = ({ onUploadSuccess, onUpload
     } finally {
       setIsProcessing(false);
       setProcessingProgress(0);
+      setProgressStep('');
     }
   };
 
@@ -168,18 +185,21 @@ const PDFUploadForm: React.FC<PDFUploadFormProps> = ({ onUploadSuccess, onUpload
         {isProcessing && (
           <div className="mt-4">
             <div className="flex items-center justify-between text-sm text-gray-600 dark:text-gray-400 mb-2">
-              <span>Processing PDF with AI...</span>
-              <span>{Math.round(processingProgress)}%</span>
+              <span className="flex items-center space-x-2">
+                <div className="w-4 h-4 border-2 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
+                <span>{progressStep}</span>
+              </span>
+              <span className="font-medium">{Math.round(processingProgress)}%</span>
             </div>
-            <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
+            <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-3">
               <div
-                className="bg-blue-600 h-2 rounded-full transition-all duration-300"
+                className="bg-gradient-to-r from-blue-500 to-blue-600 h-3 rounded-full transition-all duration-500 ease-out"
                 style={{ width: `${processingProgress}%` }}
               />
             </div>
-            <p className="text-xs text-gray-500 dark:text-gray-400 mt-2">
-              Extracting transaction data from your bank statement...
-            </p>
+            <div className="mt-2 text-xs text-gray-500 dark:text-gray-400">
+              AI is analyzing your bank statement... This may take a few moments.
+            </div>
           </div>
         )}
 

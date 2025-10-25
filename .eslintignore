@@ -1,0 +1,19 @@
+# Dependencies
+node_modules/
+.next/
+out/
+build/
+
+# Generated files
+*.config.js
+*.config.mjs
+next-env.d.ts
+
+# Test files
+*.test.ts
+*.test.tsx
+*.spec.ts
+*.spec.tsx
+
+# Scripts
+scripts/

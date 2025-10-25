@@ -25,7 +25,7 @@ export const formatDate = (date: Date): string => {
  * Format date for input fields
  */
 export const formatDateForInput = (date: Date): string => {
-  return date.toISOString().split('T')[0];
+  return date.toISOString().split('T')[0] || '';
 };
 
 /**

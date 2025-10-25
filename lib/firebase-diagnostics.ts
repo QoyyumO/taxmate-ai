@@ -30,7 +30,7 @@ export const diagnoseFirebase = () => {
   console.log('\n🔐 Firebase Auth Configuration:');
   console.log('Auth Domain:', auth.config.authDomain);
   console.log('API Key:', auth.config.apiKey ? `${auth.config.apiKey.substring(0, 10)}...` : 'MISSING');
-  console.log('Project ID:', auth.config.projectId);
+  console.log('Project ID:', process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID);
   
   // Check for common issues
   console.log('\n🚨 Common Issues:');
@@ -63,7 +63,7 @@ export const diagnoseFirebase = () => {
     authConfig: {
       authDomain: auth.config.authDomain,
       apiKey: auth.config.apiKey ? `${auth.config.apiKey.substring(0, 10)}...` : 'MISSING',
-      projectId: auth.config.projectId,
+      projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
     }
   };
 };

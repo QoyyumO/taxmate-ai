@@ -63,7 +63,7 @@ export async function POST(request: NextRequest) {
 
     // Store transactions in Firestore
     try {
-      const { addTransactions, addCsvUpload } = await import('../../../lib/firestore');
+      const { createTransactions, createCsvUpload } = await import('../../../lib/firestore');
       
       // Convert bank data to transaction format
       const transactions = result.bankData.transactions.map(transaction => ({
@@ -79,10 +79,10 @@ export async function POST(request: NextRequest) {
       }));
 
       // Store transactions in Firestore
-      await addTransactions(transactions);
+      await createTransactions(transactions);
 
       // Store CSV upload metadata
-      await addCsvUpload({
+      await createCsvUpload({
         userId: userId,
         fileName: pdfFile.name,
         fileUrl: '', // PDF files are processed, not stored

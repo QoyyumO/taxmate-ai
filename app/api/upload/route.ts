@@ -86,6 +86,7 @@ export async function POST(request: NextRequest) {
           category: transaction.category,
           source: transaction.source,
           isDeductible: transaction.isDeductible,
+          createdAt: new Date(),
         }));
 
         await createTransactions(transactionData);

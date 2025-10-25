@@ -1,6 +1,5 @@
-import Papa from 'papaparse';
 import { z } from 'zod';
-import type { CsvRow, ParsedTransaction } from '../types/transactions';
+import type { ParsedTransaction } from '../types/transactions';
 
 // Zod schema for CSV row validation
 const csvRowSchema = z.object({
@@ -25,7 +24,7 @@ export const parseCsvFile = async (file: File): Promise<ParsedTransaction[]> => 
       throw new Error('CSV file must have at least a header and one data row');
     }
     
-    const headers = lines[0].split(',').map(h => h.trim().toLowerCase());
+    const headers = lines[0]?.split(',').map(h => h.trim().toLowerCase()) || [];
     console.log('CSV headers:', headers);
     
     const dataRows = lines.slice(1);
@@ -38,6 +37,7 @@ export const parseCsvFile = async (file: File): Promise<ParsedTransaction[]> => 
     
     for (let i = 0; i < dataRows.length; i++) {
       const row = dataRows[i];
+      if (!row) continue; // Skip empty rows
       
       // Better CSV parsing that handles quoted fields and commas within quotes
       const values = [];

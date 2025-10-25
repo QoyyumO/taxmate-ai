@@ -17,7 +17,47 @@ export interface Transaction {
   source: string;
   isDeductible: boolean;
   createdAt: Date;
+  // AI-powered enhancements
+  aiVerification?: AIVerification;
+  documentationStatus?: DocumentationStatus;
+  deductionType?: DeductionType;
+  rentReliefEligible?: boolean;
 }
+
+export interface AIVerification {
+  isVerified: boolean;
+  confidence: number; // 0-1 scale
+  reasoning: string;
+  suggestedCategory?: string;
+  suggestedDeductionType?: DeductionType;
+  lastVerified: Date;
+}
+
+export interface DocumentationStatus {
+  hasReceipt: boolean;
+  hasPensionSlip: boolean;
+  hasRentAgreement: boolean;
+  hasInsurancePolicy: boolean;
+  hasLoanDocument: boolean;
+  isVerified: boolean;
+  verificationDate?: Date;
+}
+
+export type DeductionType = 
+  | 'NHF' // National Housing Fund
+  | 'NHIS' // National Health Insurance Scheme
+  | 'PENSION' // Pension Reform Act
+  | 'HOUSE_LOAN_INTEREST' // Interest on owner-occupied house loan
+  | 'LIFE_INSURANCE' // Life insurance or annuity premium
+  | 'RENT_RELIEF' // Rent relief (20% of rent or ₦500,000)
+  | 'BUSINESS_RENT' // Rent for business premises
+  | 'EMPLOYEE_SALARIES' // Employee salaries and benefits
+  | 'BUSINESS_MAINTENANCE' // Repair and maintenance
+  | 'RND' // Research and development
+  | 'BAD_DEBT' // Bad or doubtful debts
+  | 'DISABILITY_EXPENSE' // Assistive or disability-related expenses
+  | 'OTHER_BUSINESS' // Other business expenses
+  | 'NON_DEDUCTIBLE'; // Not deductible
 
 export interface CsvUpload {
   id?: string;
@@ -40,7 +80,25 @@ export interface TaxSummary {
   // New 2026 fields
   deductibleExpenses?: number;
   rentRelief?: number;
+  // AI-enhanced fields
+  aiVerifiedDeductions?: number;
+  documentationVerifiedDeductions?: number;
+  pendingVerificationDeductions?: number;
+  taxAdjustments?: TaxAdjustment[];
   createdAt: Date;
+}
+
+export interface TaxAdjustment {
+  id?: string;
+  userId: string;
+  originalTaxSummaryId: string;
+  adjustmentType: 'REFUND' | 'ADDITIONAL_TAX' | 'DEDUCTION_UPDATE';
+  amount: number;
+  reason: string;
+  supportingDocuments: string[];
+  status: 'PENDING' | 'APPROVED' | 'REJECTED';
+  createdAt: Date;
+  processedAt?: Date;
 }
 
 export interface DashboardSummary {

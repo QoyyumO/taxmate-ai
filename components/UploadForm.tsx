@@ -15,6 +15,7 @@ const UploadForm: React.FC<UploadFormProps> = ({ onUploadSuccess, onUploadError 
   const { user } = useUserStore();
   const [isUploading, setIsUploading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
+  const [progressStep, setProgressStep] = useState('');
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
 
   const onDrop = useCallback((acceptedFiles: File[]) => {
@@ -41,10 +42,15 @@ const UploadForm: React.FC<UploadFormProps> = ({ onUploadSuccess, onUploadError 
 
     setIsUploading(true);
     setUploadProgress(0);
+    setProgressStep('Preparing upload...');
 
     try {
       console.log('Starting CSV upload for user:', user.uid);
       console.log('Selected file:', selectedFile.name, selectedFile.size);
+      
+      // Step 1: Upload file
+      setProgressStep('Uploading file...');
+      setUploadProgress(20);
       
       const formData = new FormData();
       formData.append('file', selectedFile);
@@ -59,11 +65,29 @@ const UploadForm: React.FC<UploadFormProps> = ({ onUploadSuccess, onUploadError 
       console.log('Response status:', response.status);
       console.log('Response headers:', response.headers);
       
+      // Step 2: Processing
+      setProgressStep('Processing CSV data...');
+      setUploadProgress(50);
+      
+      // Step 3: Parsing transactions
+      setProgressStep('Parsing transactions...');
+      setUploadProgress(70);
+      
+      // Step 4: Saving to database
+      setProgressStep('Saving to database...');
+      setUploadProgress(90);
+      
       const result = await response.json();
       console.log('Response data:', result);
 
       if (response.ok && result.success) {
         console.log('Upload successful:', result);
+        setProgressStep('Complete!');
+        setUploadProgress(100);
+        
+        // Small delay to show completion
+        await new Promise(resolve => setTimeout(resolve, 500));
+        
         onUploadSuccess?.(result);
         setSelectedFile(null);
       } else {
@@ -77,6 +101,7 @@ const UploadForm: React.FC<UploadFormProps> = ({ onUploadSuccess, onUploadError 
     } finally {
       setIsUploading(false);
       setUploadProgress(0);
+      setProgressStep('');
     }
   };
 
@@ -182,14 +207,20 @@ const UploadForm: React.FC<UploadFormProps> = ({ onUploadSuccess, onUploadError 
         {isUploading && (
           <div className="mt-4">
             <div className="flex items-center justify-between text-sm text-gray-600 dark:text-gray-400 mb-2">
-              <span>Uploading...</span>
-              <span>{uploadProgress}%</span>
+              <span className="flex items-center space-x-2">
+                <div className="w-4 h-4 border-2 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
+                <span>{progressStep}</span>
+              </span>
+              <span className="font-medium">{uploadProgress}%</span>
             </div>
-            <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
+            <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-3">
               <div
-                className="bg-blue-600 h-2 rounded-full transition-all duration-300"
+                className="bg-gradient-to-r from-blue-500 to-blue-600 h-3 rounded-full transition-all duration-500 ease-out"
                 style={{ width: `${uploadProgress}%` }}
               />
+            </div>
+            <div className="mt-2 text-xs text-gray-500 dark:text-gray-400">
+              Processing your CSV file... This may take a few moments.
             </div>
           </div>
         )}
@@ -221,7 +252,7 @@ const UploadForm: React.FC<UploadFormProps> = ({ onUploadSuccess, onUploadError 
           <ul className="text-xs text-blue-800 dark:text-blue-200 space-y-1">
             <li>• Required columns: date, description, amount, type</li>
             <li>• Optional columns: category, source, isDeductible</li>
-            <li>• Type should be "income" or "expense"</li>
+            <li>• Type should be &quot;income&quot; or &quot;expense&quot;</li>
             <li>• Date format: YYYY-MM-DD</li>
             <li>• Amount should be numeric (no currency symbols)</li>
           </ul>
