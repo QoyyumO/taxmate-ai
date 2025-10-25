@@ -52,11 +52,11 @@ export default function Home() {
 
   if (isAuthenticated) {
     return (
-      <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+      <div className="min-h-screen bg-gray-50 dark:bg-[#050a06]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
           <div className="text-center">
             <h1 className="text-4xl font-bold text-gray-900 dark:text-white mb-4">
-              Welcome to TaxMate AI
+              Welcome to <span className='text-[#5d2360]'> TaxMate AI </span>
             </h1>
             <p className="text-xl text-gray-600 dark:text-gray-400 mb-8">
               Your AI-powered tax assistant is ready to help you calculate your tax liability.
@@ -64,13 +64,13 @@ export default function Home() {
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Link
                 href="/dashboard"
-                className="inline-flex items-center px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                className="inline-flex items-center px-6 py-3 font-semibold bg-[#93cc4c] text-black rounded-lg hover:bg-[#92cc4cd5] transition-colors"
               >
                 Go to Dashboard
               </Link>
               <Link
                 href="/dashboard/upload"
-                className="inline-flex items-center px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
+                className="inline-flex items-center px-6 py-3 bg-[#5d2360] font-semibold text-white rounded-lg hover:bg-[#5d2360ca] transition-colors"
               >
                 Upload Bank Statement
               </Link>
@@ -82,13 +82,13 @@ export default function Home() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-900 dark:to-gray-800">
+    <div className="min-h-screen from-blue-50 to-indigo-100 bg-[#050a06]">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <header className="py-6">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-2">
-              <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
+              <div className="w-8 h-8 bg-[#5d2360] rounded-lg flex items-center justify-center">
                 <span className="text-white font-bold text-sm">TM</span>
               </div>
               <span className="text-xl font-bold text-gray-900 dark:text-white">
@@ -98,13 +98,13 @@ export default function Home() {
             <div className="flex items-center space-x-4">
               <Link
                 href="/auth/login"
-                className="text-gray-700 hover:text-blue-600 dark:text-gray-300 dark:hover:text-blue-400 transition-colors"
+                className="text-gray-700 hover:text-[#5d2360] dark:text-gray-300 font-semibold dark:hover:text-[#5d2360] transition-colors"
               >
                 Login
               </Link>
               <Link
                 href="/auth/register"
-                className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors"
+                className="bg-[#93cc4c] font-semibold text-black px-4 py-2 rounded-lg hover:bg-[#92cc4cd2] transition-colors"
               >
                 Get Started
               </Link>
@@ -117,7 +117,7 @@ export default function Home() {
           <div className="text-center">
             <h1 className="text-5xl font-bold text-gray-900 dark:text-white mb-6">
               AI-Powered Tax Assistant
-              <span className="block text-blue-600">for Nigeria</span>
+              <span className="block text-[#5d2360]">for Nigeria</span>
             </h1>
             <p className="text-xl text-gray-600 dark:text-gray-400 mb-8 max-w-3xl mx-auto">
               Simplify your tax calculations with intelligent insights. Upload your transaction data 
@@ -126,13 +126,13 @@ export default function Home() {
             <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12">
               <Link
                 href="/auth/register"
-                className="inline-flex items-center px-8 py-4 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-lg font-medium"
+                className="inline-flex items-center px-8 py-4 bg-[#93cc4c] text-black rounded-lg hover:bg-[#92cc4cd4] transition-colors text-lg font-semibold"
               >
                 Start Free Trial
               </Link>
               <Link
                 href="#features"
-                className="inline-flex items-center px-8 py-4 bg-white text-gray-700 rounded-lg hover:bg-gray-50 transition-colors text-lg font-medium border border-gray-300"
+                className="inline-flex items-center px-8 py-4 bg-white text-black rounded-lg hover:bg-gray-50 transition-colors text-lg font-semibold border border-gray-300"
               >
                 Learn More
               </Link>
@@ -145,8 +145,8 @@ export default function Home() {
               Why Choose TaxMate AI?
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-              <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
-                <div className="w-12 h-12 bg-blue-100 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 rounded-lg flex items-center justify-center mb-4">
+              <div className="bg-white dark:bg-[#1d1d1d] rounded-lg shadow-sm border border-gray-200 dark:border-slate-900 p-6">
+                <div className="w-12 h-12 bg-yellow-100 dark:bg-yellow-900/20 text-yellow-600 dark:text-yellow-400 rounded-lg flex items-center justify-center mb-4">
                   <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                   </svg>
@@ -159,7 +159,7 @@ export default function Home() {
                 </p>
               </div>
 
-              <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
+              <div className="bg-white dark:bg-[#1d1d1d] rounded-lg shadow-sm border border-gray-200 dark:border-slate-900 p-6">
                 <div className="w-12 h-12 bg-green-100 dark:bg-green-900/20 text-green-600 dark:text-green-400 rounded-lg flex items-center justify-center mb-4">
                   <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
@@ -173,7 +173,7 @@ export default function Home() {
                 </p>
               </div>
 
-              <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
+              <div className="bg-white dark:bg-[#1d1d1d] rounded-lg shadow-sm border border-gray-200 dark:border-slate-900 p-6">
                 <div className="w-12 h-12 bg-purple-100 dark:bg-purple-900/20 text-purple-600 dark:text-purple-400 rounded-lg flex items-center justify-center mb-4">
                   <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
@@ -190,7 +190,7 @@ export default function Home() {
           </div>
 
           {/* CTA Section */}
-          <div className="bg-blue-600 rounded-2xl p-8 text-center">
+          <div className="bg-[#5d2360] rounded-2xl p-8 text-center">
             <h2 className="text-3xl font-bold text-white mb-4">
               Ready to Simplify Your Taxes?
             </h2>
@@ -199,7 +199,7 @@ export default function Home() {
             </p>
             <Link
               href="/auth/register"
-              className="inline-flex items-center px-8 py-4 bg-white text-blue-600 rounded-lg hover:bg-gray-100 transition-colors text-lg font-medium"
+              className="inline-flex items-center px-8 py-4 bg-[#93cc4c] text-black rounded-lg hover:bg-gray-100 transition-colors text-lg font-semibold"
             >
               Get Started Now
             </Link>

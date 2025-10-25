@@ -97,7 +97,7 @@ export function MultimodalUploader({ onAnalysisComplete, onAnalysisError }: Mult
   };
 
   return (
-    <div className="w-full p-6 bg-white dark:bg-gray-800 rounded-lg shadow-md border border-gray-200 dark:border-gray-700">
+    <div className="w-full p-6 bg-white dark:bg-[#1c1c1c] rounded-lg shadow-md border border-gray-200 dark:border-gray-700">
 
       {/* Text Input */}
       <div className="mb-6">
@@ -109,7 +109,7 @@ export function MultimodalUploader({ onAnalysisComplete, onAnalysisError }: Mult
           value={textInput}
           onChange={(e) => setTextInput(e.target.value)}
           placeholder="Paste your bank statement text, transaction list, or any financial data here..."
-          className="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
+          className="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-[#93cc4c] focus:border-transparent dark:bg-gray-700 dark:text-white"
           rows={4}
           disabled={isLoading}
         />
@@ -120,8 +120,8 @@ export function MultimodalUploader({ onAnalysisComplete, onAnalysisError }: Mult
         {...getRootProps()}
         className={`flex-grow p-8 border-2 border-dashed rounded-lg text-center cursor-pointer transition-colors duration-200 ease-in-out flex flex-col items-center justify-center ${
           isDragActive 
-            ? 'border-blue-600 bg-blue-50 dark:bg-blue-900/20' 
-            : 'border-gray-300 dark:border-gray-600 hover:border-blue-500'
+            ? 'border-[#93cc4c] bg-blue-50 dark:bg-blue-900/20' 
+            : 'border-gray-300 dark:border-gray-600 hover:border-[#93cc4c]'
         }`}
       >
         <input {...getInputProps()} />

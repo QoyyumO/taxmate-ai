@@ -155,7 +155,7 @@ const TaxSummaryPage: React.FC = () => {
 
   return (
     <ProtectedRoute>
-      <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+      <div className="min-h-screen bg-gray-50 dark:bg-[#050a06]">
         <Navbar />
         
         <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -203,7 +203,7 @@ const TaxSummaryPage: React.FC = () => {
             <div className="space-y-8">
               {/* Tax Summary Cards */}
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                <div className="bg-white rounded-lg shadow-sm border border-gray-200 dark:bg-gray-800 dark:border-gray-700 p-6">
+                <div className="bg-white rounded-lg shadow-sm border border-gray-200 dark:bg-[#2e312e] dark:border-gray-700 p-6">
                   <div className="flex items-center justify-between">
                     <div>
                       <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Total Income</p>
@@ -219,7 +219,7 @@ const TaxSummaryPage: React.FC = () => {
                   </div>
                 </div>
 
-                <div className="bg-white rounded-lg shadow-sm border border-gray-200 dark:bg-gray-800 dark:border-gray-700 p-6">
+                <div className="bg-white rounded-lg shadow-sm border border-gray-200 dark:bg-[#2e312e] dark:border-gray-700 p-6">
                   <div className="flex items-center justify-between">
                     <div>
                       <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Total Expenses</p>
@@ -235,7 +235,7 @@ const TaxSummaryPage: React.FC = () => {
                   </div>
                 </div>
 
-                <div className="bg-white rounded-lg shadow-sm border border-gray-200 dark:bg-gray-800 dark:border-gray-700 p-6">
+                <div className="bg-white rounded-lg shadow-sm border border-gray-200 dark:bg-[#2e312e] dark:border-gray-700 p-6">
                   <div className="flex items-center justify-between">
                     <div>
                       <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Taxable Income</p>
@@ -251,7 +251,7 @@ const TaxSummaryPage: React.FC = () => {
                   </div>
                 </div>
 
-                <div className="bg-white rounded-lg shadow-sm border border-gray-200 dark:bg-gray-800 dark:border-gray-700 p-6">
+                <div className="bg-white rounded-lg shadow-sm border border-gray-200 dark:bg-[#2e312e] dark:border-gray-700 p-6">
                   <div className="flex items-center justify-between">
                     <div>
                       <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Estimated Tax</p>
@@ -270,7 +270,7 @@ const TaxSummaryPage: React.FC = () => {
 
               {/* Additional 2026 Tax Information */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div className="bg-white rounded-lg shadow-sm border border-gray-200 dark:bg-gray-800 dark:border-gray-700 p-6">
+                <div className="bg-white rounded-lg shadow-sm border border-gray-200 dark:bg-[#2e312e] dark:border-gray-700 p-6">
                   <div className="flex items-center justify-between">
                     <div>
                       <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Deductible Expenses</p>
@@ -286,7 +286,7 @@ const TaxSummaryPage: React.FC = () => {
                   </div>
                 </div>
 
-                <div className="bg-white rounded-lg shadow-sm border border-gray-200 dark:bg-gray-800 dark:border-gray-700 p-6">
+                <div className="bg-white rounded-lg shadow-sm border border-gray-200 dark:bg-[#2e312e] dark:border-gray-700 p-6">
                   <div className="flex items-center justify-between">
                     <div>
                       <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Rent Relief (2026)</p>
@@ -304,13 +304,13 @@ const TaxSummaryPage: React.FC = () => {
               </div>
 
               {/* Tax Breakdown */}
-              <div className="bg-white rounded-lg shadow-sm border border-gray-200 dark:bg-gray-800 dark:border-gray-700 p-6">
+              <div className="bg-white rounded-lg shadow-sm border border-gray-200 dark:bg-[#2e312e] dark:border-slate-600 p-6">
                 <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
                   Tax Breakdown
                 </h3>
                 <div className="space-y-4">
                   {taxBrackets.map((bracket, index) => (
-                    <div key={index} className="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
+                    <div key={index} className="flex items-center justify-between p-4 bg-gray-50 dark:bg-[#212421] rounded-lg">
                       <div className="flex-1">
                         <p className="font-medium text-gray-900 dark:text-white">
                           {bracket.description}
@@ -334,7 +334,7 @@ const TaxSummaryPage: React.FC = () => {
 
               {/* AI Verification Status */}
               {aiTaxData && (aiTaxData.aiVerifiedDeductions !== undefined || aiTaxData.documentationVerifiedDeductions !== undefined) && (
-                <div className="bg-white rounded-lg shadow-sm border border-gray-200 dark:bg-gray-800 dark:border-gray-700 p-6">
+                <div className="bg-white rounded-lg shadow-sm border border-gray-200 dark:bg-[#2e312e] dark:border-gray-700 p-6">
                   <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
                     🤖 AI Verification Status
                   </h3>
@@ -360,7 +360,7 @@ const TaxSummaryPage: React.FC = () => {
                     {aiTaxData.documentationVerifiedDeductions !== undefined && (
                       <div className="bg-blue-50 dark:bg-blue-900/20 p-4 rounded-lg">
                         <div className="flex items-center">
-                          <div className="w-8 h-8 bg-blue-100 dark:bg-blue-800 rounded-full flex items-center justify-center mr-3">
+                          <div className="w-8 h-8 bg-blue-100 dark:bg-[#2e312e] rounded-full flex items-center justify-center mr-3">
                             <svg className="w-4 h-4 text-blue-600 dark:text-blue-400" fill="currentColor" viewBox="0 0 20 20">
                               <path fillRule="evenodd" d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4zm2 6a1 1 0 011-1h6a1 1 0 110 2H7a1 1 0 01-1-1zm1 3a1 1 0 100 2h6a1 1 0 100-2H7z" clipRule="evenodd" />
                             </svg>
@@ -398,13 +398,13 @@ const TaxSummaryPage: React.FC = () => {
 
               {/* Tax History */}
               {taxSummaries.length > 1 && (
-                <div className="bg-white rounded-lg shadow-sm border border-gray-200 dark:bg-gray-800 dark:border-gray-700 p-6">
+                <div className="bg-white rounded-lg shadow-sm border border-gray-200 dark:bg-[#2e312e] dark:border-gray-700 p-6">
                   <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
                     Tax History
                   </h3>
                   <div className="space-y-3">
                     {taxSummaries.slice(1, 5).map((summary) => (
-                      <div key={summary.id} className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
+                      <div key={summary.id} className="flex items-center justify-between p-3 bg-gray-50 dark:bg-[#202320] rounded-lg">
                         <div>
                           <p className="font-medium text-gray-900 dark:text-white">
                             {summary.period}
