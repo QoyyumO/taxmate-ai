@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { extractTransactionsFromContent } from '../../../lib/gemini';
 import { createTransactions } from '../../../lib/firestore';
-import { generateTaxSummary } from '../../../lib/taxLogic';
+import { analyzeTransactionsWithAI, calculateAIVerifiedDeductions, calculateAIRentRelief } from '../../../lib/aiTaxLogic';
 
 // Helper function to convert a File object into a Google Generative AI Part
 async function fileToGenerativePart(file: File) {
@@ -73,19 +73,41 @@ export async function POST(req: NextRequest) {
       userId,
     }));
 
-    // Store transactions in Firestore
-    await createTransactions(transactionsWithUserId);
-    console.log('Transactions stored in Firestore');
+    // Analyze transactions with AI for deductions and categorization
+    console.log('Starting AI analysis of transactions...');
+    const aiAnalyzedTransactions = await analyzeTransactionsWithAI(transactionsWithUserId);
+    console.log('AI analysis completed');
 
-    // Generate tax summary
-    const taxSummary = generateTaxSummary(userId, transactionsWithUserId);
+    // Store AI-analyzed transactions in Firestore
+    await createTransactions(aiAnalyzedTransactions);
+    console.log('AI-analyzed transactions stored in Firestore');
+
+    // Calculate AI-verified deductions and rent relief
+    const aiVerifiedDeductions = calculateAIVerifiedDeductions(aiAnalyzedTransactions);
+    const aiRentRelief = calculateAIRentRelief(aiAnalyzedTransactions);
+
+    // Generate comprehensive tax summary with AI insights
+    const taxSummary = {
+      totalIncome: aiAnalyzedTransactions
+        .filter(t => t.type === 'income')
+        .reduce((sum, t) => sum + t.amount, 0),
+      totalExpenses: aiAnalyzedTransactions
+        .filter(t => t.type === 'expense')
+        .reduce((sum, t) => sum + t.amount, 0),
+      aiVerifiedDeductions: aiVerifiedDeductions.totalDeductions,
+      aiRentRelief: aiRentRelief.totalRentRelief,
+      transactionCount: aiAnalyzedTransactions.length,
+      aiAnalysisComplete: true,
+      deductionBreakdown: aiVerifiedDeductions.deductionBreakdown,
+      rentReliefCalculation: aiRentRelief.calculation
+    };
 
     return NextResponse.json({
       success: true,
-      transactionCount: transactions.length,
-      transactions: transactions.slice(0, 10), // Return first 10 for preview
+      transactionCount: aiAnalyzedTransactions.length,
+      transactions: aiAnalyzedTransactions.slice(0, 10), // Return first 10 AI-analyzed transactions for preview
       taxSummary,
-      message: `Successfully extracted ${transactions.length} transactions and calculated tax summary.`
+      message: `Successfully extracted ${aiAnalyzedTransactions.length} transactions, performed AI analysis, and calculated comprehensive tax summary.`
     });
 
   } catch (error: any) {
