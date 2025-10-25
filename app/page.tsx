@@ -72,7 +72,7 @@ export default function Home() {
                 href="/dashboard/upload"
                 className="inline-flex items-center px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
               >
-                Upload CSV
+                Upload Bank Statement
               </Link>
             </div>
           </div>
@@ -166,7 +166,7 @@ export default function Home() {
                   </svg>
                 </div>
                 <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
-                  Easy CSV Upload
+                  Easy Bank Statement Upload
                 </h3>
                 <p className="text-gray-600 dark:text-gray-400">
                   Simply upload your bank statement or transaction CSV file and let AI do the rest.

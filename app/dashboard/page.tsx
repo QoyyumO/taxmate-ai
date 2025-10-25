@@ -118,7 +118,7 @@ const DashboardPage: React.FC = () => {
                   href="/dashboard/upload"
                   className="block w-full bg-blue-600 text-white text-center py-3 px-4 rounded-lg hover:bg-blue-700 transition-colors"
                 >
-                  Upload New CSV
+                  Upload Bank Statement
                 </a>
                 <button
                   onClick={handleRecalculateTax}

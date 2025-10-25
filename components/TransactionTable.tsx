@@ -310,7 +310,7 @@ const TransactionTable: React.FC<TransactionTableProps> = ({
           <p className="text-gray-600 dark:text-gray-400">
             {searchTerm || filterType !== 'all' 
               ? 'Try adjusting your search or filters'
-              : 'Upload a CSV file to get started'
+              : 'Upload a bank statement file to get started'
             }
           </p>
         </div>
