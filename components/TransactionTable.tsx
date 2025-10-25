@@ -72,7 +72,7 @@ const TransactionTable: React.FC<TransactionTableProps> = ({
   };
 
   return (
-    <div className="bg-white rounded-lg shadow-sm border border-gray-200 dark:bg-gray-800 dark:border-gray-700">
+    <div className="bg-white rounded-lg shadow-sm border border-gray-200 dark:bg-[#2e312e] dark:border-gray-700">
       {/* Header */}
       <div className="p-6 border-b border-gray-200 dark:border-gray-700">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
@@ -92,13 +92,13 @@ const TransactionTable: React.FC<TransactionTableProps> = ({
               placeholder="Search transactions..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+              className="px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-[#93cc4c] dark:bg-[#2e312e] dark:border-gray-600 dark:text-white"
             />
             
             <select
               value={filterType}
               onChange={(e) => setFilterType(e.target.value as 'all' | 'income' | 'expense')}
-              className="px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+              className="px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-[#93cc4c] dark:bg-[#2e312e] dark:border-gray-600 dark:text-white"
             >
               <option value="all">All Types</option>
               <option value="income">Income</option>
@@ -148,7 +148,7 @@ const TransactionTable: React.FC<TransactionTableProps> = ({
               </th>
             </tr>
           </thead>
-          <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+          <tbody className="bg-white dark:bg-[#2e312e] divide-y divide-gray-200 dark:divide-slate-600">
             {filteredAndSortedTransactions.map((transaction) => (
               <tr
                 key={transaction.id}
@@ -269,7 +269,7 @@ const TransactionTable: React.FC<TransactionTableProps> = ({
       </div>
 
       {/* Summary */}
-      <div className="px-6 py-4 bg-gray-50 dark:bg-gray-700 border-t border-gray-200 dark:border-gray-600">
+      <div className="px-6 py-4 bg-gray-50 dark:bg-[#2e312e] border-t border-slate-200 dark:border-slate-600">
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
           <div className="text-center">
             <p className="text-sm text-gray-600 dark:text-gray-400">Total Income</p>

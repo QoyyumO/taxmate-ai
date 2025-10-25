@@ -20,13 +20,13 @@ const Navbar: React.FC = () => {
   };
 
   return (
-    <nav className="bg-white shadow-sm border-b border-gray-200 dark:bg-gray-900 dark:border-gray-700">
+    <nav className="bg-white shadow-sm border-b border-gray-200 dark:bg-[#050a06] dark:border-gray-700">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
           <div className="flex items-center">
             <Link href="/" className="flex items-center space-x-2">
-              <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
+              <div className="w-8 h-8 bg-[#5d2360] rounded-lg flex items-center justify-center">
                 <span className="text-white font-bold text-sm">TM</span>
               </div>
               <span className="hidden md:block text-xl font-bold text-gray-900 dark:text-white">
@@ -40,25 +40,25 @@ const Navbar: React.FC = () => {
             <div className="hidden md:flex items-center space-x-8">
               <Link 
                 href="/dashboard" 
-                className="text-gray-700 hover:text-blue-600 dark:text-gray-300 dark:hover:text-blue-400 transition-colors"
+                className="text-gray-700 hover:text-[#5d2360] dark:text-gray-300 dark:hover:text-[#b37db6] transition-colors"
               >
                 Dashboard
               </Link>
               <Link 
                 href="/dashboard/upload" 
-                className="text-gray-700 hover:text-blue-600 dark:text-gray-300 dark:hover:text-blue-400 transition-colors"
+                className="text-gray-700 hover:text-blue-600 dark:text-gray-300 dark:hover:text-[#b37db6] transition-colors"
               >
                 Bank Statement Upload
               </Link>
               <Link 
                 href="/dashboard/transactions" 
-                className="text-gray-700 hover:text-blue-600 dark:text-gray-300 dark:hover:text-blue-400 transition-colors"
+                className="text-gray-700 hover:text-blue-600 dark:text-gray-300 dark:hover:text-[#b37db6] transition-colors"
               >
                 Transactions
               </Link>
               <Link 
                 href="/dashboard/summary" 
-                className="text-gray-700 hover:text-blue-600 dark:text-gray-300 dark:hover:text-blue-400 transition-colors"
+                className="text-gray-700 hover:text-blue-600 dark:text-gray-300 dark:hover:text-[#b37db6] transition-colors"
               >
                 Tax Summary
               </Link>

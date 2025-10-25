@@ -83,7 +83,7 @@ const DashboardPage: React.FC = () => {
 
   return (
     <ProtectedRoute>
-      <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+      <div className="min-h-screen bg-gray-50 dark:bg-[#050a06]">
         <Navbar />
         
         <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -109,7 +109,7 @@ const DashboardPage: React.FC = () => {
 
           {/* Quick Actions */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-            <div className="bg-white rounded-lg shadow-sm border border-gray-200 dark:bg-gray-800 dark:border-gray-700 p-6">
+            <div className="bg-white rounded-lg shadow-sm border border-gray-200 dark:bg-[#2e312e] dark:border-slate-900 p-6">
               <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
                 Quick Actions
               </h3>
@@ -135,7 +135,7 @@ const DashboardPage: React.FC = () => {
               </div>
             </div>
 
-            <div className="bg-white rounded-lg shadow-sm border border-gray-200 dark:bg-gray-800 dark:border-gray-700 p-6">
+            <div className="bg-white rounded-lg shadow-sm border border-gray-200 dark:bg-[#2e312e] dark:border-slate-900 p-6">
               <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
                 Recent Activity
               </h3>
@@ -176,7 +176,7 @@ const DashboardPage: React.FC = () => {
 
           {/* Tax Information */}
           {summary && summary.estimatedTax > 0 && (
-            <div className="bg-blue-50 dark:bg-blue-900/20 rounded-lg p-6">
+            <div className="bg-blue-50 dark:bg-[#1d1d1d] rounded-lg p-6">
               <h3 className="text-lg font-semibold text-blue-900 dark:text-blue-100 mb-2">
                 Tax Information
               </h3>

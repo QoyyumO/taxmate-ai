@@ -38,7 +38,7 @@ const SummaryCard: React.FC<SummaryCardProps> = ({
   };
 
   return (
-    <div className="bg-white rounded-lg shadow-sm border border-gray-200 dark:bg-gray-800 dark:border-gray-700 p-6">
+    <div className="bg-white rounded-lg shadow-sm border border-gray-200 dark:bg-[#2e312e] dark:border-slate-900 p-6">
       <div className="flex items-center justify-between">
         <div className="flex-1">
           <p className="text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">
