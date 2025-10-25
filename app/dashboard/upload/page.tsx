@@ -2,20 +2,15 @@
 import React, { useState } from 'react';
 import ProtectedRoute from '../../../components/ProtectedRoute';
 import Navbar from '../../../components/Navbar';
-import UploadForm from '../../../components/UploadForm';
-import PDFUploadForm from '../../../components/PDFUploadForm';
-import Button from '../../../components/ui/button/Button';
-import Tabs from '../../../components/ui/tabs/Tabs';
-import TabPane from '../../../components/ui/tabs/TabPane';
+import { MultimodalUploader } from '../../../components/MultimodalUploader';
 import { Modal } from '../../../components/ui/modal';
-import { Dropdown } from '../../../components/ui/dropdown/Dropdown';
+import Button from '../../../components/ui/button/Button';
 
 const UploadPage: React.FC = () => {
   const [uploadSuccess, setUploadSuccess] = useState<any>(null);
   const [uploadError, setUploadError] = useState<string | null>(null);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [showErrorModal, setShowErrorModal] = useState(false);
-  const [showHelpDropdown, setShowHelpDropdown] = useState(false);
 
   const handleUploadSuccess = (data: any) => {
     console.log('Upload success callback:', data);
@@ -37,85 +32,22 @@ const UploadPage: React.FC = () => {
       <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
         <Navbar />
         
-        <main className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          {/* Header with Help Dropdown */}
+        <main className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          {/* Header */}
           <div className="mb-8">
-            <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-4">
-              <div className="flex-1">
-                <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white">
-                  Upload Transaction Data
-                </h1>
-                <p className="text-gray-600 dark:text-gray-400 mt-2">
-                  Choose how you want to upload your transaction data for tax calculations.
-                </p>
-              </div>
-              
-              {/* Help Dropdown */}
-              <div className="relative flex-shrink-0">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => setShowHelpDropdown(!showHelpDropdown)}
-                  className="dropdown-toggle w-full sm:w-auto"
-                >
-                  Help & Support
-                </Button>
-                
-                <Dropdown
-                  isOpen={showHelpDropdown}
-                  onClose={() => setShowHelpDropdown(false)}
-                  className="w-full sm:w-80"
-                >
-                  <div className="p-4">
-                    <h3 className="font-semibold text-gray-900 dark:text-white mb-3">
-                      Upload Methods
-                    </h3>
-                    <div className="space-y-3">
-                      <div>
-                        <h4 className="font-medium text-gray-800 dark:text-gray-200">CSV Upload</h4>
-                        <p className="text-sm text-gray-600 dark:text-gray-400">
-                          Manual data preparation required. Full control over data format.
-                        </p>
-                      </div>
-                      <div>
-                        <h4 className="font-medium text-gray-800 dark:text-gray-200">PDF Bank Statement</h4>
-                        <p className="text-sm text-gray-600 dark:text-gray-400">
-                          AI-powered automatic extraction. Works with any bank format.
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                </Dropdown>
-              </div>
-            </div>
+            <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
+              Bank Statement Analysis
+            </h1>
+            <p className="text-gray-600 dark:text-gray-400 mt-2">
+              Upload bank statements, receipts, or paste transaction data. Our AI will extract and analyze all transactions automatically.
+            </p>
           </div>
 
-          {/* Tabs Component */}
-          <Tabs
-            showTabs={true}
-            justifyTabs="left"
-            tabStyle="independent"
-            tabMarginClass="mb-6 sm:mb-8"
-            onChange={() => {
-              // Handle tab change if needed
-            }}
-          >
-            {/* CSV Upload Tab */}
-            <TabPane tab="CSV Upload">
-              <UploadForm
-                onUploadSuccess={handleUploadSuccess}
-                onUploadError={handleUploadError}
-              />
-            </TabPane>
-
-            {/* PDF Upload Tab */}
-            <TabPane tab="PDF Bank Statement">
-              <PDFUploadForm
-                onUploadSuccess={handleUploadSuccess}
-                onUploadError={handleUploadError}
-              />
-            </TabPane>
-          </Tabs>
+          {/* Multimodal Uploader */}
+          <MultimodalUploader
+            onAnalysisComplete={handleUploadSuccess}
+            onAnalysisError={handleUploadError}
+          />
 
           {/* Success Modal */}
           <Modal
